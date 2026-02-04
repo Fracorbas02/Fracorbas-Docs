@@ -1,0 +1,39 @@
+facebook:
+  label: Facebook
+  permalink: /facebook
+  description: Facebook tag description
+
+hello:
+  label: Hello
+  permalink: /hello
+  description: Hello tag description
+
+docusaurus:
+  label: Docusaurus
+  permalink: /docusaurus
+  description: Docusaurus tag description
+
+hola:
+  label: Hola
+  permalink: /hola
+  description: Hola tag description
+
+informatique:
+  label: informatique
+  permalink: /informatique
+  description: tous les articles qui parlent de l'informatique
+
+cybersecurite:
+  label: cybersécurité
+  permalink: /cybersecurite
+  description: tous les acticles qui parlent de la sécurité informatique
+
+open-source:
+  label: open-source
+  permalink: /open-source
+  description: tous les articles sur l'open source
+
+gaming:
+  label: gaming
+  permalink: /gaming
+  description: Les articles sur les jeux vidéos. Avis ou review tout est là

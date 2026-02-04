@@ -1,0 +1,8 @@
+{
+  "label": "Protocoles",
+  "position": 0,
+  "link": {
+    "type": "generated-index",
+    "description": "Documentation des protocoles, de leur utilisation, faille ou configuration"
+  }
+}

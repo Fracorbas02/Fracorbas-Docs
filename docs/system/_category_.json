@@ -1,0 +1,8 @@
+{
+  "label": "System",
+  "position": 0,
+  "link": {
+    "type": "generated-index",
+    "description": "Documentation de l'utilisation / configuration des différents systèmes d'exploitation"
+  }
+}
