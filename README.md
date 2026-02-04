@@ -1,41 +1,30 @@
-# Website
+# Bastodoc
+*ce projet utilise docusaurus*
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+Bienvenue dans le projet **bastodoc**. Vous pouvez retrouver une version en ligne ici : [bastodoc](https://docs.bastienbonora.fr/), ou alors compiler une version chez vous directement avec npm. (*je vous explique plus bas comment faire*).
 
-### Installation
+Ce projet est néé de la simple envie de documenter ce que je fais, cela passe par de simple projet, des notes ou alors des explications dont j'ai besoin.
 
-```
-$ yarn
-```
+Il est possible qu'il soit présent une quantité non négligeable d'erreur, je m'en excuse. Si jamais vous en trouvez qui sont trop grosses pour ne pas être enlevées, n'hésitez pas à me contacter ici : fracorbas@gmail.com. Je serais ravi de me corriger et d'apprendre de nouveau.
 
-### Local Development
+## Compiler le projet
 
-```
-$ yarn start
-```
+Vous devez au préalable avoir :
+* npm
+* git
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+Je vous laisse aller voir les documentations officielles quant à l'installation de ces outils : 
+* [install npm - npmjs.com docs](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+* [install git - git-scm.com](https://git-scm.com/install/linux)
 
-### Build
-
-```
-$ yarn build
-```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-### Deployment
-
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
+Une fois que ces outils sont installés, placez vous dans le répertoire où cloner ce repo, puis clonez-le :
+```bash
+git clone https://github.com/Fracorbas02/Fracorbas-Docs.git
 ```
 
-Not using SSH:
-
+Placez vous ensuite dans ce dosser puis lancez le serveur via la commande :
+```bash
+npm start
 ```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+Votre navigateur internet devrait automatiquement vous ouvrir une fenêtre. Si ce n'est pas le cas, rendez-vous sur cette URL : `http://localhost:3000/`
