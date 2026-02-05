@@ -3,6 +3,10 @@ slug: clair-obscur-un-jeu-incroyable
 title: "Clair Obscur : Un jeu incroyable"
 authors: [bastien]
 tags: [gaming]
+date: 2025-05-06
+last_update:
+  date: 2025-05-06
+  author: bastien
 ---
 ## Clair Obscur Expedition 33
 Pour ceux qui ne sont pas au courant, ce jeu est tout bonnement incroyable et sucite beaucoup d'avis. Mais un peu d'explication avant.

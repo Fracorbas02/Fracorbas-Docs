@@ -1,0 +1,236 @@
+---
+slug: Utiliser-markdown-docusaurus
+title: "Utiliser markdown avec Docusaurus"
+authors: [bastien]
+tags: [informatique, open-source]
+date: 2025-06-27
+last_update:
+  date: 2025-06-27
+  author: bastien
+---
+Qu'est-ce que markdown, comment l'utiliser et quelles sont les différentes syntaxes sous Docusaurus ?
+<!-- truncate -->
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+:::tip[Avant propos]
+Dans cet article, je vais principalement parler de la manière dont on peut utiliser le langage markdown au sein de Docusaurus. 
+:::
+
+## Qu'est-ce que markdown
+
+Dans ces articles, j'aime bien apporter quelques notions d'histoire. Le markdown a initialement été conçu en 2004 et a pour objectif d'être un langage de balisage léger permettant l'écriture de texte lisible en brut tout en pouvant facilement être converti en HTML ou en différent format (PDF, png, scg, etc.).
+C'est donc **John Gruber** et les contributions d'**Aaron Swartz** qui ont permis au langage markdown de voir le jour.
+
+La syntaxe n'a été que partiellement définie par les deux créateurs, et des implémentations divergent alors rapidement. Une absence de norme se fait ressentir et cela conduit à une compatibilité limitée entre les différents outils.
+
+En 2014, **CommonMark** est une initiative de standardisation qui est menée par un groupe indépendant qui incluent des membres de Reddit, StackOverflow et GitHub. Son objectif est de fournir une spécification formelle et un parseur de référence : `cmark`. On se retrouve alors avec une version de Markdown strictement définie mais toujours extensible.
+
+Récemment, on voit markdown recevoir des évolution dans beaucoup de sites web :   
+* **GitHub Flavored Markdown (GFM)** : tables, mentions, checkboxes, autolink
+* **Pandoc Markdown** : méta-données, citations, LaTeX
+
+Désormais, markdown s'est véritablement intégré dans beaucoup de domaines de l'informatique :  
+* Documentation technique : GitHub, GitLab, Docusaurus
+* Blogs et sites statiques : Jekyll, Hugo, Zola, Docusaurus
+* Éditions spécifiques ou personnelle : Pandoc, Quarto, Obsidian, Logseq, Notion (partiellement)
+* Communication collaborative : Slack, Discord, Reddit
+
+## Utiliser markdown
+
+Je ne vais pas vous faire un cour complet sur markdown, sur l'écriture de base, vous pouvez vous référer à ce site : [Introduction à Markdown](https://learninglab.gitlabpages.inria.fr/mooc-rr/mooc-rr-ressources/module1/ressources/introduction_to_markdown_fr.html) dans lequel sont référencé toutes les écritures principales de markdown. Ce sont les éléments qui seront tous implémentés par défaut dans vos éditeurs favoris.
+
+Je vais parler de ce que l'on retrouve en plus dans des éditeurs ou moteurs markdown récents. Chaque développeur peut ajouter ses propres syntaxes qui permettent de faire des choses supplémentaires. Concernant l'utilisation de docusaurus, on peut utiliser markdown de la manière suivante : [Markdown Features | Docusaurus](https://docusaurus.io/docs/markdown-features)
+
+Voici quelques une des features intéressantes de docusaurus :   
+### Admonitions
+
+Ces éléments sont uniquement possible avec des fichiers `.mdx` au lieu de `md`.
+
+Par exemple, la structure de cet article commence par : 
+```
+---
+slug: Utiliser-markdown-docusaurus
+title: "Utiliser markdown avec Docusaurus"
+authors: [bastien]
+tags: [informatique, open-source]
+---
+```
+Cela me permet de définir l'URL, le titre de l'article, le ou les auteurs, ainsi que les tags.
+
+Ensuite, je mets le texte de base qui est affiché par docusaurus et Google lorsqu'il référence mes articles : 
+```
+Qu'est-ce que markdown, comment l'utiliser et quelles sont les différentes syntaxes ?
+<!-- truncate -->
+```
+:::tip[Remarque]
+La balise trucate permet de définir où Docusaurus s'arrête pour afficher le texte dans la page de mon blog. Google peut alors utiliser ce texte pour l'afficher dans son référencement.
+:::
+
+Ensuite, on peut ajouter et importer des éléments dans ce fichier pour qu'ils soient utilisés.
+
+On retrouve alors différents types de ces notes : 
+<Tabs>
+  <TabItem value="note" label="note" default>
+    ```text
+	:::note
+	ceci est une note avec du **markdown**
+	:::
+	```
+	:::note
+	ceci est une note avec du **markdown**
+	:::
+  </TabItem>
+  <TabItem value="information" label="information">
+    ```
+	:::tip
+	Ceci est une information
+	:::
+	```
+	:::tip
+	Ceci est une information
+	:::
+  </TabItem>
+  <TabItem value="Attention" label="Attention">
+    ```
+	:::warning
+	Ceci est un avertissement
+	:::
+	```
+	:::warning
+	Ceci est un avertissement
+	:::
+  </TabItem>
+  <TabItem value="Danger" label="Danger">
+    ```
+	:::danger
+	Ceci est un danger
+	:::
+	```
+	:::danger
+	Ceci est un danger
+	:::
+  </TabItem>
+  <TabItem value="Personnalisé" label="Personnalisé">
+	```
+	:::tip[Remarque]
+	cette aide possède un titre défini à la main
+	:::
+	```
+	:::tip[Remarque]
+	cette aide possède un titre défini à la main
+	:::
+  </TabItem>
+</Tabs>
+
+### Tabs
+
+Les tables, me permettent d'afficher différents éléments mais de manière horizontale comme je viens de le faire avec les admonitions. Pour en ajouter, il faut dans un premier temps fonctionner avec un fichier `.mdx`.
+
+Pour cela, il faut après avoir défini les premiers éléments du blog ajouter les lignes suivantes :
+```jsx
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+```
+
+Une fois que c'est fait, on peut définir les tables, les titres et le contenu : 
+```jsx
+<Tabs>
+  <TabItem value="apple" label="Apple" default>
+    This is an apple 🍎
+  </TabItem>
+  <TabItem value="orange" label="Orange">
+    This is an orange 🍊
+  </TabItem>
+  <TabItem value="banana" label="Banana">
+    This is a banana 🍌
+  </TabItem>
+</Tabs>
+```
+<Tabs>
+  <TabItem value="apple" label="Apple" default>
+    This is an apple 🍎
+  </TabItem>
+  <TabItem value="orange" label="Orange">
+    This is an orange 🍊
+  </TabItem>
+  <TabItem value="banana" label="Banana">
+    This is a banana 🍌
+  </TabItem>
+</Tabs>
+
+Mieux encore, dans le cadre d'une documentation spécifique, on peut ajouter chaque table dans un groupe permettant de tout le temps rester sur le même sujet : 
+```jsx
+<Tabs groupId="operating-systems">
+  <TabItem value="win" label="Windows">Use Ctrl + C to copy.</TabItem>
+  <TabItem value="mac" label="macOS">Use Command + C to copy.</TabItem>
+</Tabs>
+
+<Tabs groupId="operating-systems">
+  <TabItem value="win" label="Windows">Use Ctrl + V to paste.</TabItem>
+  <TabItem value="mac" label="macOS">Use Command + V to paste.</TabItem>
+</Tabs>
+```
+
+<Tabs groupId="operating-systems">
+  <TabItem value="win" label="Windows">Use Ctrl + C to copy.</TabItem>
+  <TabItem value="mac" label="macOS">Use Command + C to copy.</TabItem>
+</Tabs>
+
+<Tabs groupId="operating-systems">
+  <TabItem value="win" label="Windows">Use Ctrl + V to paste.</TabItem>
+  <TabItem value="mac" label="macOS">Use Command + V to paste.</TabItem>
+</Tabs>
+
+### Intégration de mermaid
+
+Mermaid est un projet Open Source : [Mermaid | Diagramming and charting tool](https://mermaid.js.org/). Cet outil nous permet en markdown de créer des diagrammes sous différentes formes. C'est un élément très utile qui nous permet sans trop d'effort de réaliser des graphiques cohérents.
+
+Avec docusaurus, on peut ajouter le support de markdown en suivant les éléments suivants : 
+```bash
+# Effectuer cette commande dans l'emplacement où se trouve votre projet
+npm install --save @docusaurus/theme-mermaid
+```
+
+après cela, éditez le fichier `docusaurus.config.js` :
+```jsx title="docusaurus.config.js"
+export default {
+  markdown: {
+    mermaid: true,
+  },
+  themes: ['@docusaurus/theme-mermaid'],
+};
+```
+
+Une fois fait, chacun de vos bloc de code défini comme étant `mermaid` vous permettront de faire des schémas : 
+```text title="Exemple de diagramme mermaid""
+mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
+
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
+
+***
+Bon, je pense avoir fait le tour de ce que je trouve très intéressant avec Docusaurus. Honnêtement, je n'ai presque pas modifié les éléments de l'outil mis à part quelques descriptions ci et là.
+
+L'outil est très puissant et honnêtement, on peut faire des choses vraiment, vraiment balaises. Je vous mets quelques exemples :   
+* [temporal.io](https://docs.temporal.io)
+* [Testing Library | Testing Library](https://testing-library.com/)
+
+En gros, j'ai encore du taff à faire pour que j'ai un joli blog et un site de documentation beaucoup plus joli. Ça reste dans ma to-do list, je montrerais évidemment les évolutions.
+
+N'hésitez pas à aller voir les différents sites : 
+* [Docusaurus](https://docusaurus.io/)
+* [Mermaid](https://mermaid.js.org/)
+* [Introduction à Markdown](https://learninglab.gitlabpages.inria.fr/mooc-rr/mooc-rr-ressources/module1/ressources/introduction_to_markdown_fr.html)

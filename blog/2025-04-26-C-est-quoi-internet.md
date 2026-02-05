@@ -3,6 +3,10 @@ slug: C-est-quoi-internet
 title: "C'est quoi internet ?"
 authors: [bastien]
 tags: [informatique]
+date: 2025-04-26
+last_update:
+  date: 2025-04-26
+  author: bastien
 ---
 
 Avant de parler directement de ce que l'on nomme "internet", il faut que l'on définisse les bases.

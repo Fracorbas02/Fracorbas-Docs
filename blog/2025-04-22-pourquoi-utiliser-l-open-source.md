@@ -3,6 +3,10 @@ slug: pourquoi-choisir-l-open-source
 title: "Pourquoi choisir l'Open Source ?"
 authors: [bastien]
 tags: [informatique, open-source]
+date: 2025-04-22
+last_update:
+  date: 2025-04-22
+  author: bastien
 ---
 
 ## Qu'est-ce que l'open source ?

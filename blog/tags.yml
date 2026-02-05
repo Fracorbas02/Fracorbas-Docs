@@ -1,23 +1,23 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
-
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
-
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
-
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
-
+tools:
+  label: tools
+  permalink: /tools
+  description: des outils très utile sur Windows et Linux
+cheatsheet:
+  label: cheatsheet
+  permalink: /cheatsheet
+  description: des petits articles mémos pour ne jamais rien oublier sur vos sujets favoris.
+Windows:
+  label: Windows
+  permalink: /windows
+  description: Articles concernant Windows, son utilisation, ses failles ou des outils pratiques
+System:
+  label: Système
+  permalink: /system
+  description: Articles concernant le ssystèmes d'exploitation, leur utilisation, leur fonctionnement et la manière de les administrer.
+Linux:
+  label: Linux
+  permalink: /Linux
+  description: Articles concernant Linux, ses distributions, ses logiciels, ses utilisations ou ses failles.
 informatique:
   label: informatique
   permalink: /informatique
