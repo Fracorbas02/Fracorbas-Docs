@@ -2,7 +2,7 @@
 slug: Cheatsheet-du-langage-C
 title: Cheatsheet du langage C
 authors: [bastien]
-tags: [cheatsheet]
+tags: [cheatsheet, informatique]
 date: 2025-07-07
 last_update:
   date: 2025-07-19
