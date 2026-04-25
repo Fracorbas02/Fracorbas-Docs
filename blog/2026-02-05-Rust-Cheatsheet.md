@@ -14,6 +14,7 @@ Article toujours en cours de rédaction
 # Pourquoi Rust
 J'ai pu précédemment faire une petite [cheatsheet sur le langage C](/blog/Cheatsheet-du-langage-C). C'est un langage très permissif mais surtout très minutieu. Chaque action que l'on réalise a un réel impact sur toute la stack processeur qui traite nos demande. Chaque type de variable doit être utilisé dans l'objectif de manier la mémoire avec une grande précision.
 <!-- truncate -->
+
 Cependant, cette liberté accordée ajoute une complexité non négligeable au code produit et ajoute une charge mentale supplémentaire. RUST provient de ce constat et vise principalement à faciliter la vie des développeurs avec une vision basée sur une amélioration de la performance et une gestion de la mémoire plus sécurisée.
 
 Comme pour le langage C, j'utilise la plateforme Coddy pour apprendre ce langage et écrire cet article.
@@ -24,5 +25,25 @@ Pour commencer un programme dans ce langage, il est nécessaire d'utiliser le po
 ```rust title="Fonction point d'entrée en RUST"
 fn main() {
 	.... some code
+}
+```
+
+### Les commentaires
+Pour effectuer des commentaires, il est possible d'utiliser deux méthodes différentes :
+
+```rust title="Méthode 1" 
+fn main() {
+    // Ceci est un commentaire sur une seule ligne
+    println!("Hello, world!"); // Et en voici un autre 
+}
+```
+
+```rust title="Seconde méthode"
+fn main() {
+    /*
+    Ceci est un commentaire sur plusieur lignes
+    Il peut s'étendre sur d'autres lignes
+    */
+    println!("Hello, world!");
 }
 ```
