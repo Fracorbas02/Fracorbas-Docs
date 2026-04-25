@@ -13,16 +13,9 @@ function HomepageHeader() {
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
         <Heading as="h1" className="hero__title">
-          {siteConfig.title}
+          Bienvenue sur Bastodoc
         </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/category/system">
-            Mes documentations sur le système
-          </Link>
-        </div>
+        <p className="hero__subtitle">Vous retrouverez ici toute ma documentation technique personnelle ainsi que mon blog.</p>
       </div>
     </header>
   );
@@ -32,8 +25,8 @@ export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      title={`${siteConfig.title} - Blog et documentation technique`}
+      description="Documentation personnelles sur les systèmes, la cybersécurité et le développement. Articles techniques, guides et réflexions.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />
