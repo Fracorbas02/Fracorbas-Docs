@@ -116,7 +116,7 @@ export default function Home() {
                 que de contribuer, modestement, à la communauté.
               </p>
               <Link
-                to="https://github.com/fracorbas"
+                to="https://github.com/Fracorbas02"
                 className={styles.aboutLink}
                 target="_blank"
                 rel="noopener noreferrer"
