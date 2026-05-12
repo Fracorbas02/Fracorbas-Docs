@@ -160,10 +160,11 @@ const config = {
         ],
         copyright: `Copyright © ${new Date().getFullYear()} Bastodoc, Inc. Built with Docusaurus.`,
       },
-      prism: {
-        theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
-      },
+	  prism: {
+	    theme: prismThemes.github,
+	    darkTheme: prismThemes.dracula,
+	    additionalLanguages: ['bash', 'docker', 'yaml', 'ini', 'nginx', 'json'],
+	  },
       mermaid: {
           options: {
             theme: 'default', // ou 'dark', 'forest', 'neutral'
