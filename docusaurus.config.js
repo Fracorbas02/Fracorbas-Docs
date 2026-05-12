@@ -97,7 +97,7 @@ const config = {
           	position: 'left',
           },
           {
-            href: 'https://github.com/fracorbas',
+            href: 'https://github.com/Fracorbas02',
             label: 'Mon GitHub',
             position: 'right',
           },
