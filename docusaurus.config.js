@@ -8,6 +8,19 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
+// Thème Dracula étendu pour styler les clés YAML (et autres tokens atrule)
+// que le thème par défaut ne couvre pas.
+const draculaYamlFix = {
+  ...prismThemes.dracula,
+  styles: [
+    ...prismThemes.dracula.styles,
+    {
+      types: ['key', 'atrule'],
+      style: {color: 'rgb(80, 250, 123)'},
+    },
+  ],
+};
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Bastodoc',
@@ -35,7 +48,9 @@ const config = {
     defaultLocale: 'fr',
     locales: ['fr'],
   },
+
   themes: ['@docusaurus/theme-mermaid'],
+
   presets: [
     [
       'classic',
@@ -67,9 +82,10 @@ const config = {
       }),
     ],
   ],
+
   markdown: {
-      mermaid: true,
-    },
+    mermaid: true,
+  },
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
@@ -84,7 +100,7 @@ const config = {
         },
         items: [
           {
-          	to: '/docs/category/protocoles',
+            to: '/docs/category/protocoles',
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
@@ -92,9 +108,9 @@ const config = {
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
-          	href: 'https://bastienbonora.fr',
-          	label: 'Portfolio',
-          	position: 'left',
+            href: 'https://bastienbonora.fr',
+            label: 'Portfolio',
+            position: 'left',
           },
           {
             href: 'https://github.com/Fracorbas02',
@@ -114,27 +130,27 @@ const config = {
                 to: '/docs/category/system',
               },
               {
-              	label: 'Protocoles',
-              	to: '/docs/category/protocoles',
+                label: 'Protocoles',
+                to: '/docs/category/protocoles',
               },
             ],
           },
           {
-          	title: 'mes trucs à moi',
-          	items: [
-          		{
-          			label: 'Portfolio',
-          			href: 'https://bastienbonora.fr',
-          		},
-          		{
-          			label: 'Blog',
-          			to: '/blog',	
-          		},
-          		{
-          			label: 'Portfolio gopher',
-          			href: 'gopher://gopher.bastienbonora.fr',
-          		},
-          	],
+            title: 'mes trucs à moi',
+            items: [
+              {
+                label: 'Portfolio',
+                href: 'https://bastienbonora.fr',
+              },
+              {
+                label: 'Blog',
+                to: '/blog',
+              },
+              {
+                label: 'Portfolio gopher',
+                href: 'gopher://gopher.bastienbonora.fr',
+              },
+            ],
           },
           {
             title: 'merci docusaurus',
@@ -150,26 +166,26 @@ const config = {
               {
                 label: 'Stack Overflow',
                 href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },  
+              },
               {
                 label: 'Discord',
                 href: 'https://discordapp.com/invite/docusaurus',
-              },                          
+              },
             ],
           },
         ],
         copyright: `Copyright © ${new Date().getFullYear()} Bastodoc, Inc. Built with Docusaurus.`,
       },
-	  prism: {
-	    theme: prismThemes.github,
-	    darkTheme: prismThemes.dracula,
-	    additionalLanguages: ['bash', 'docker', 'yaml', 'ini', 'nginx', 'json'],
-	  },
+      prism: {
+        theme: prismThemes.github,
+        darkTheme: draculaYamlFix,
+        additionalLanguages: ['bash', 'docker', 'yaml', 'ini', 'nginx', 'json'],
+      },
       mermaid: {
-          options: {
-            theme: 'default', // ou 'dark', 'forest', 'neutral'
-          },
+        options: {
+          theme: 'default', // ou 'dark', 'forest', 'neutral'
         },
+      },
     }),
 };
 
