@@ -101,10 +101,8 @@ const config = {
         items: [
           {
             to: '/docs/category/protocoles',
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
-            position: 'left',
             label: 'Documentation',
+            position: 'left',
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {

@@ -23,37 +23,34 @@ Pour bien comprendre Docker, il convient de distinguer la **virtualisation maté
 
 Une machine virtuelle (VM) simule un ordinateur complet. Un **hyperviseur** — KVM, VMware ESXi, Hyper-V — intercepte les appels matériels et présente à chaque VM un matériel virtualisé. Chaque VM embarque son propre noyau et son propre système d'exploitation invité.
 
-```
-┌─────────────────────────────────────────┐
-│  App A   │  App B   │  App C            │
-├──────────┼──────────┼───────────────────┤
-│  OS A    │  OS B    │  OS C  (invités)  │
-├──────────┴──────────┴───────────────────┤
-│              Hyperviseur                │
-├─────────────────────────────────────────┤
-│        Système d'exploitation hôte      │
-├─────────────────────────────────────────┤
-│                Matériel                 │
-└─────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph apps ["Applications + OS invités"]
+        direction LR
+        A1["App A<br/>OS A"]
+        A2["App B<br/>OS B"]
+        A3["App C<br/>OS C"]
+    end
+    apps --> H[Hyperviseur]
+    H --> OS["Système d'exploitation hôte"]
+    OS --> HW[Matériel]
 ```
 
 ### Conteneurs
 
 Un conteneur partage le **noyau de l'hôte** et n'embarque que les fichiers nécessaires à l'application : binaires, bibliothèques, configuration. L'isolation est assurée par des mécanismes du noyau Linux, et non par un hyperviseur.
 
-```
-┌─────────────────────────────────────────┐
-│  App A   │  App B   │  App C            │
-├──────────┼──────────┼───────────────────┤
-│  Lib A   │  Lib B   │  Lib C            │
-├──────────┴──────────┴───────────────────┤
-│           Moteur de conteneurs          │
-├─────────────────────────────────────────┤
-│        Système d'exploitation hôte      │
-│             (noyau partagé)             │
-├─────────────────────────────────────────┤
-│                Matériel                 │
-└─────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph apps ["Applications conteneurisées"]
+        direction LR
+        A1["App A<br/>Lib A"]
+        A2["App B<br/>Lib B"]
+        A3["App C<br/>Lib C"]
+    end
+    apps --> ME["Moteur de conteneurs"]
+    ME --> OS["Système d'exploitation hôte<br/>(noyau partagé)"]
+    OS --> HW[Matériel]
 ```
 
 ### Comparaison
@@ -156,9 +153,11 @@ Docker n'est pas une solution universelle. Quelques points méritent attention :
 
 ## Pour aller plus loin
 
-La suite de cette documentation aborde :
+La suite de cette documentation aborde, dans l'ordre :
 
 - [L'installation de Docker](./installation) sur Arch Linux et Debian / Ubuntu.
-- *(À venir)* Les commandes fondamentales et le cycle de vie d'un conteneur.
-- *(À venir)* La rédaction d'un `Dockerfile`.
-- *(À venir)* L'orchestration multi-conteneurs avec Docker Compose.
+- [Les commandes fondamentales](./commandesFondamentales) et le cycle de vie d'un conteneur.
+- [La construction d'images avec `Dockerfile`](./dockerfile) : sémantique des instructions, cache de couches, builds multi-stages.
+- [L'orchestration multi-conteneurs avec Docker Compose](./docker-compose).
+- [Les réseaux et volumes Docker](./network-volume) en profondeur.
+- [Un article bonus de sujets avancés](./bonus) : PID 1 et signaux, anatomie OCI, builds multi-architectures, debugging via namespaces, rootless et hardening.
