@@ -1,0 +1,8 @@
+{
+  "label": "Debug",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Cette partie est assez exotique. Concrètement, c'est un endroit dans lequel je mets des documentations sur mes différents debug et souci que j'ai rencontré dans mon aventure sous Linux. C'est une sorte de bric à brac explicative de problèmes étranges."
+  }
+}
