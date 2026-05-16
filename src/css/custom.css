@@ -6,6 +6,14 @@
 
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap');
 
+code,
+pre,
+pre code,
+.token,
+.prism-code {
+  font-variant-ligatures: none !important;
+  font-feature-settings: "liga" 0, "clig" 0, "calt" 0, "dlig" 0;
+}
 /* ─── Palette claire ─────────────────────────────────────────── */
 :root {
   --ifm-color-primary:         #0891b2;
