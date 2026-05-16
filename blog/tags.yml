@@ -35,7 +35,10 @@ open-source:
   label: open-source
   permalink: /open-source
   description: tous les articles sur l'open source
-
+IA:
+  label: IA
+  permalink: /IA
+  description: tout article parlant d'intelligence artificielle de manière générale. LLM ou non.
 gaming:
   label: gaming
   permalink: /gaming
