@@ -11,7 +11,7 @@ last_update:
 
 # Panne Bluetooth Mediatek MT7922 sous Arch Linux — méthodologie de diagnostic
 
-Ce document retrace un cas réel de diagnostic d'une panne Bluetooth sur un portable Lenovo IdeaPad équipé d'une puce combo Wi-Fi+Bluetooth Mediatek MT7922, sous Arch Linux. L'objectif n'est pas tant la résolution finale — qui s'est avérée être un bug upstream non corrigeable localement — que la **méthodologie** et les **concepts techniques** sous-jacents qui s'appliquent à n'importe quelle panne hardware sous Linux.
+Ayant passé un long moment à chercher une solution, j'ai retracé dans ce document tout ce que j'ai fais pour trouver la source du problème. Mon poste un un Lenovo Legion équipé d'une puce combo Wi-Fi+Bluetooth Mediatek MT7922, sous Arch Linux. L'objectif n'est pas tant la résolution finale — qui s'est avérée être un bug upstream non corrigeable localement — que la **méthodologie** et les **concepts techniques** sous-jacents qui s'appliquent à n'importe quelle panne hardware sous Linux.
 
 ## Le contexte initial
 
@@ -22,11 +22,11 @@ Configuration du test :
 - **Distribution** : Arch Linux, install récente (mode `archinstall`)
 - **Noyau** : `linux-lts` 6.18.30-1-lts (puis aussi `linux` 7.0.7 pour test)
 - **Puce sans-fil** : Mediatek MT7922 (combo Wi-Fi 6 + Bluetooth 5.2), driver kernel `mt7921e` côté Wi-Fi et `btusb`/`btmtk` côté Bluetooth
-- **Symptôme** : aucun contrôleur Bluetooth disponible dans les paramètres système, alors que le Wi-Fi fonctionnait parfaitement sur la même puce
+- **Symptôme** : aucun contrôleur Bluetooth disponible dans les paramètres système, alors que le Wi-Fi fonctionnait parfaitement sur la même puce. Ou du moins Gnome refuse d'activer le bluetooth malgré que l'onglet soit présent.
 
 ## La méthodologie : éliminer les variables une par une
 
-Face à une panne dont la cause n'est pas évidente, l'erreur classique est de tester des "solutions" trouvées en ligne sans comprendre ce qu'elles font. Cette approche fonctionne parfois par hasard, mais quand elle échoue, on se retrouve avec un système modifié de partout sans savoir ce qui a vraiment été tenté.
+Face à une panne dont la cause n'est pas évidente, l'erreur classique est de tester des "solutions" trouvées en ligne sans comprendre ce qu'elles font. Cette approche fonctionne parfois par hasard, mais quand elle échoue, on se retrouve avec un système modifié de partout sans savoir ce qui a vraiment été tenté (*D'où ma réinstallation complète initiale...).
 
 L'approche systématique consiste à :
 
@@ -35,7 +35,7 @@ L'approche systématique consiste à :
 3. **Falsifier** les hypothèses incorrectes — c'est-à-dire les éliminer définitivement plutôt que les déclarer "peut-être encore valides".
 4. Itérer jusqu'à converger, ou jusqu'à atteindre la limite de ce qu'on peut tester localement.
 
-C'est exactement la démarche scientifique appliquée au sysadmin. Voici ce que ça donne en pratique sur notre panne :
+Voici ce que ça donne en pratique sur ma panne :
 
 ```mermaid
 flowchart TD
@@ -68,7 +68,7 @@ Chaque test soit valide soit falsifie une hypothèse. À la fin, soit on a trouv
 
 ## La pile Bluetooth sous Linux
 
-Comprendre où ça peut casser nécessite de connaître les composants en jeu, parce qu'une panne peut s'introduire à n'importe quel étage.
+Comprendre où ça peut casser nécessite de connaître les composants en jeu, parce qu'une panne peut s'introduire à n'importe quel étage. Voici un petit schéma pour expliquer comment ça fonctionne :
 
 ```mermaid
 flowchart TB
@@ -113,7 +113,7 @@ Décortiquons les étages.
 
 ### Espace utilisateur
 
-L'utilisateur interagit avec le Bluetooth via une interface graphique (les paramètres du DE, ou `blueman`), ou en ligne de commande via `bluetoothctl`. Toutes ces interfaces parlent à `bluetoothd` via **D-Bus**, le bus de communication inter-processus de Linux.
+L'utilisateur interagit avec le Bluetooth via une interface graphique (les paramètres du DE (**D**esktop **E**nvironment), ou `blueman`), ou en ligne de commande via `bluetoothctl`. Toutes ces interfaces parlent à `bluetoothd` via **D-Bus**, le bus de communication inter-processus de Linux.
 
 ### Le démon `bluetoothd`
 
@@ -149,7 +149,7 @@ Ces fichiers sont fournis par le paquet `linux-firmware-mediatek` sur Arch.
 - **Soft block** : un blocage logiciel, déclenché par un toggle utilisateur ou un script.
 - **Hard block** : un blocage matériel, typiquement un interrupteur physique ou une touche `Fn+Fx` câblée à un GPIO.
 
-Sur un portable Lenovo, des modules spécifiques (`ideapad_laptop` chez nous) exposent en plus des **proxies ACPI** qui représentent l'état des interrupteurs radio gérés par le firmware constructeur. C'est ce qui produit des entrées `ideapad_wlan` et `ideapad_bluetooth` dans la sortie de `rfkill list`.
+Sur un laptop Lenovo, des modules spécifiques (`ideapad_laptop` chez moi) exposent en plus des **proxies ACPI** qui représentent l'état des interrupteurs radio gérés par le firmware constructeur. C'est ce qui produit des entrées `ideapad_wlan` et `ideapad_bluetooth` dans la sortie de `rfkill list`.
 
 Diagnostic typique :
 
@@ -157,7 +157,7 @@ Diagnostic typique :
 rfkill list
 ```
 
-Exemple chez nous :
+Exemple chez moi :
 
 ```
 0: ideapad_wlan: Wireless LAN
@@ -180,9 +180,9 @@ Ce qu'on apprend :
 - L'entrée `hci0` confirme que le contrôleur BT physique a été **détecté** par le noyau, que le driver `btusb` s'est attaché, et qu'une interface HCI a été créée. Si `hci0` n'apparaissait pas, le problème serait en amont du sous-système Bluetooth.
 - L'entrée `phy0` est l'équivalent pour le Wi-Fi.
 
-Notre diagnostic initial a confirmé que tout était débloqué et que le hardware était bien visible — ce qui place le bug **plus haut** dans la pile.
+Mon diagnostic initial a confirmé que tout était débloqué et que le hardware était bien visible — ce qui place le bug **plus haut** dans la pile.
 
-## Lire `dmesg` comme un sysadmin
+## Lire `dmesg`
 
 `dmesg` affiche le tampon de log du noyau : tout ce que le kernel raconte depuis le boot. C'est l'outil de référence pour diagnostiquer ce qui se passe au niveau driver / firmware.
 
@@ -192,14 +192,12 @@ Commande type pour cibler le Bluetooth Mediatek :
 sudo dmesg | grep -iE 'bluetooth|btmtk|btusb|hci|mt79|firmware'
 ```
 
-Décortiquons :
-
 - `-i` : insensible à la casse.
 - `-E` : regex étendue.
 - Le motif union (`a|b|c`) capture tous les composants en jeu : "bluetooth" (messages du sous-système BT), "btmtk"/"btusb" (drivers), "hci" (interface HCI), "mt79" (mediatek 79xx), "firmware" (chargement de blobs).
-
-Note : `dmesg` peut nécessiter `sudo` sur les systèmes récents qui restreignent l'accès au tampon kernel pour des raisons de sécurité (`kernel.dmesg_restrict=1` par défaut sur de nombreux noyaux). Le message d'erreur `dmesg: échec de lecture du tampon de noyau: Opération non permise` signifie simplement qu'il faut relancer en root.
-
+:::info
+`dmesg` peut nécessiter `sudo` sur les systèmes récents qui restreignent l'accès au tampon kernel pour des raisons de sécurité (`kernel.dmesg_restrict=1` par défaut sur de nombreux noyaux). Le message d'erreur `dmesg: échec de lecture du tampon de noyau: Opération non permise` signifie simplement qu'il faut relancer en root.
+:::
 ### Les codes d'erreur kernel
 
 Quand un message kernel se termine par un nombre négatif entre parenthèses, comme dans :
@@ -284,7 +282,7 @@ Historiquement, `linux-firmware` était un seul gros paquet contenant les blobs 
 - `linux-firmware-realtek`
 - etc.
 
-Le bénéfice est double : on installe uniquement ce qui correspond à son matériel (gain de place), et on peut downgrader chirurgicalement un seul vendeur sans toucher aux autres. C'est précisément ce qui a permis dans notre cas de revenir en arrière sur le firmware MediaTek uniquement, sans déstabiliser le firmware AMD (qui gère le GPU iGPU + dGPU) ou les autres.
+Le bénéfice est double : on installe uniquement ce qui correspond à son matériel (gain de place), et on peut downgrader chirurgicalement un seul vendeur sans toucher aux autres. C'est précisément ce qui a permis dans mon cas de revenir en arrière sur le firmware MediaTek uniquement, sans déstabiliser le firmware AMD (qui gère le GPU iGPU + dGPU) ou les autres.
 
 ## Pacman : downgrade et `IgnorePkg`
 
@@ -322,8 +320,12 @@ Le problème avec un downgrade, c'est qu'au prochain `pacman -Syu`, pacman va re
 [options]
 IgnorePkg = linux-firmware-mediatek
 ```
+:::info
+Normalement cette partie est gérée automatiquement avec downgrade. Vous devriez être prompté à la fin quelque chose comme `voulez-vous exclure tel paquet de pacman`
+N'hésitez pas ensuite à vérifier que la ligne est bien présente dans votre fichier `/etc/pacman.conf`
+:::
 
-Lors d'un upgrade, pacman te le signale clairement :
+Lorsque l'on essaie ensuite de faire une mise à jour, pacman nous le dit clairement :
 
 ```
 avertissement : linux-firmware-mediatek : ignore la mise à jour du paquet (20260221-1 => 20260410-1)
@@ -333,7 +335,7 @@ C'est un garde-fou explicite. Quand le bug upstream sera corrigé, il suffira de
 
 ## Cold boot vs warm reboot : l'état hardware persistant
 
-Une intuition souvent fausse : "j'ai redémarré, donc le hardware est dans un état propre". Faux. Quand on fait `reboot`, le système est ce qu'on appelle *warm-rebooté* : le CPU est réinitialisé et le kernel est rechargé, mais sur la carte mère, des rails d'alimentation restent actifs en permanence.
+Une intuition souvent fausse : "j'ai redémarré, donc le hardware est dans un état propre". **Faux**. Quand on fait `reboot`, le système est ce qu'on appelle *warm-rebooté* (redémarré à chaaud pour les puristes) : le CPU est réinitialisé et le kernel est rechargé, mais sur la carte mère, des rails d'alimentation restent actifs en permanence.
 
 ```mermaid
 flowchart LR
@@ -366,13 +368,13 @@ Sur n'importe quelle carte mère moderne, en plus du rail "principal" qui n'est 
 
 ### Le cold boot sur un portable
 
-Sur un portable à batterie interne (cas de la majorité des Lenovo IdeaPad récents), le mode opératoire propre pour forcer une coupure totale :
+Sur la plupart des laptop sur le marché, le mode opératoire propre pour forcer une coupure totale :
 
-1. `shutdown -h now`
+1. `poweroff`
 2. Attendre que toutes les LEDs soient éteintes.
 3. Débrancher l'adaptateur secteur.
-4. Maintenir le bouton power enfoncé pendant 30 à 60 secondes (machine débranchée). Ça force la décharge des capacités de la carte mère.
-5. Si l'IdeaPad a un *pinhole reset* à l'arrière (petit trou avec une icône batterie barrée), enfoncer un trombone dedans pendant quelques secondes. Ça déconnecte électriquement la batterie interne du circuit, ce qui est l'équivalent moderne du "retrait de batterie".
+4. Maintenir le bouton power enfoncé pendant 30 à 60 secondes (machine débranchée). Ça force la décharge des capacités de la carte mère (*et moi qui rigolait quand Lenovo m'a demandé de faire ça sur un ticket de support...*).
+5. Il est possible avec Lenovo d'avoir un *pinhole reset* à l'arrière (petit trou avec une icône batterie barrée), enfoncer un trombone dedans pendant quelques secondes. Ça déconnecte électriquement la batterie interne du circuit, ce qui est l'équivalent moderne du "retrait de batterie".
 6. Rebrancher, redémarrer.
 
 ### Le piège du Fast Startup Windows
@@ -384,7 +386,10 @@ Désactivation dans Windows :
 
 ## La digression Steam : la stack Vulkan
 
-Pendant le diagnostic Bluetooth, un problème connexe est apparu : Steam crashait de manière erratique, et ses logs montraient :
+Comme si un problème ne suffisait pas, d'un seul coup Steam a commencé à faire des siennes sur mon poste : crash inopiné, aucune réaction...
+Vu que j'étais déjà en train de tenter des choses initialement avec Bluetooth, j'ai eu peur d'avoir une fois de plus touché à quelque chose que je n'aurais pas du.
+
+Très utile pour debug steam est de lancer l'application en cli avec `steam` ou `steam --debug` pour avoir le plus d'info possible. En l'occurence, l'erreur était toute trouvée :
 
 ```
 CVulkanTopology: failed to get physical device count
@@ -444,16 +449,51 @@ vulkaninfo --summary
 ```
 
 La sortie liste les *Instance Layers*, les *Devices* énumérés (avec leur driver et leur architecture), et permet immédiatement de voir si un ICD attendu est absent.
-
+Pour mon cas tout fonctionne : 
+```bash
+Devices:
+========
+GPU0:
+	apiVersion         = 1.4.335
+	driverVersion      = 26.0.6
+	vendorID           = 0x1002
+	deviceID           = 0x73df
+	deviceType         = PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
+	deviceName         = AMD Radeon RX 6800M (RADV NAVI22)
+	driverID           = DRIVER_ID_MESA_RADV
+	driverName         = radv
+	driverInfo         = Mesa 26.0.6-arch1.1
+	conformanceVersion = 1.4.0.0
+	deviceUUID         = 00000000-0300-0000-0000-000000000000
+	driverUUID         = 414d442d-4d45-5341-2d44-525600000000
+GPU1:
+	apiVersion         = 1.4.335
+	driverVersion      = 26.0.6
+	vendorID           = 0x1002
+	deviceID           = 0x1681
+	deviceType         = PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU
+	deviceName         = AMD Radeon 680M (RADV REMBRANDT)
+	driverID           = DRIVER_ID_MESA_RADV
+	driverName         = radv
+	driverInfo         = Mesa 26.0.6-arch1.1
+	conformanceVersion = 1.4.0.0
+	deviceUUID         = 00000000-3700-0000-0000-000000000000
+	driverUUID         = 414d442d-4d45-5341-2d44-525600000000
+```
 ### Le cas "ICD fantôme"
 
-Autre piège vu pendant le diagnostic : ma machine avait `nvidia-utils` installé alors que le système n'a aucun GPU NVIDIA. Cet ICD s'enregistrait dans le loader, qui l'interrogeait au démarrage de Steam. Selon les versions, l'ICD NVIDIA peut soit retourner zéro device proprement, soit faire échouer toute l'énumération si le module kernel NVIDIA n'est pas chargé. Ce dernier cas tuait l'énumération entière, alors que les ICDs AMD étaient pourtant présents et fonctionnels.
+Mon souci était plus simple. Je venais de réinstaller ma machine et par défaut, des paquets inutile sont installés et d'autres étaient manquants. Ma machine avait `nvidia-utils` installé alors que le système n'a aucun GPU NVIDIA. Cet ICD s'enregistrait dans le loader, qui l'interrogeait au démarrage de Steam. Selon les versions, l'ICD NVIDIA peut soit retourner zéro device proprement, soit faire échouer toute l'énumération si le module kernel NVIDIA n'est pas chargé. Ce dernier cas tuait l'énumération entière, et vu que je n'avais pas la librairie 32bit pour AMD... ça ne pouvait qu'échouer
 
 Solution : retirer les paquets NVIDIA inutiles.
 
 ```bash
 sudo pacman -Rns nvidia-utils lib32-nvidia-utils
 ```
+Puis on installe la bonne librairie : 
+```bash
+sudo pacman -S lib32-vulkan-radeon
+```
+Maintenant tout fonctionne normalement, sans crash intempestifs.
 
 Avant de retirer, on vérifie qui les a tirés en dépendance pour éviter de casser autre chose :
 
@@ -511,7 +551,7 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 Ce script utilise `/etc/grub.d/10_linux` pour scanner `/boot/` à la recherche de tous les `vmlinuz-*` et `initramfs-*`, et génère une entrée par kernel trouvé.
 
 **Limite** : `10_linux` ne sait pas reconnaître les UKI. S'il n'y a que des UKI dans `/boot/EFI/Linux/` et pas de `vmlinuz-*` directement utilisés, `grub-mkconfig` ne trouvera rien à mettre dans le menu.
-
+> Ce qui évidemment était mon cas...
 ### systemd-boot
 
 Bootloader minimaliste fourni par systemd, qui lit ses entrées de boot dans `/boot/loader/entries/*.conf`. Chaque fichier décrit un kernel à booter avec sa cmdline et son initramfs. Plus simple que GRUB mais aussi moins de fonctionnalités.
@@ -591,7 +631,7 @@ sudo efibootmgr -v
 
 Le `-v` (verbose) affiche le chemin EFI complet de chaque entrée.
 
-Exemple chez nous (extrait) :
+Exemple chez moi (extrait) :
 
 ```
 BootCurrent: 0003
@@ -649,7 +689,7 @@ Pratique quand on a multiplié les expérimentations et qu'on veut nettoyer.
 
 ## Le bilan : quand le bug est upstream
 
-Voici la grille de tests qu'on a parcourue dans notre diagnostic Bluetooth MT7922, dans l'ordre :
+Voici la grille de tests que j'ai parcouru dans le diagnostic Bluetooth MT7922, dans l'ordre :
 
 | Hypothèse | Test | Résultat |
 |-----------|------|----------|
@@ -665,15 +705,17 @@ Voici la grille de tests qu'on a parcourue dans notre diagnostic Bluetooth MT792
 | Firmware plus ancien | Downgrade à `20251111` (5 mois en arrière) | Bug persistant |
 
 Le code d'erreur observé tout au long : `Bluetooth: hci0: Failed to send wmt func ctrl (-22)` — `EINVAL`. La commande WMT FUNC_CTRL envoyée par le driver est systématiquement rejetée par le firmware MediaTek comme malformée.
+> C'est tout de même étrange, je n'exclu pas le fait que ça soit ma carte bluetooth qui soit morte vu qu'elle fonctionnait plus tôt dans la journée (*avant que je ne fasse tout planter et que je réinstalle*)
 
-**Diagnostic final** : protocol mismatch driver/firmware introduit dans une combinaison récente, qui persiste à travers plusieurs versions de kernel (LTS 6.18, mainline 7.0) et plusieurs versions de firmware (du `20251020` au `20260224`). Le bug est en amont, dans le code du driver `btmtk` ou dans le firmware MediaTek lui-même, et aucune version locale disponible ne contient à la fois un driver et un firmware compatibles.
+**Diagnostic final** : Pour le moment, je ne peut que me dire que cela provient d'un protocol mismatch driver/firmware introduit dans une combinaison récente, qui persiste à travers plusieurs versions de kernel (LTS 6.18, mainline 7.0) et plusieurs versions de firmware (du `20251020` au `20260224`). Le bug est en amont, dans le code du driver `btmtk` ou dans le firmware MediaTek lui-même, et aucune version locale disponible ne contient à la fois un driver et un firmware compatibles.
 
+> N'étant pas le seul sur Lenovo a avoir eu l'erreur récemment, j'espère que cela sera corrigé sous peu.
 ### La leçon de méthodologie
 
 Quand un bug résiste à tout ce qu'on peut tester localement, il est essentiel de :
 
-1. **Documenter précisément ce qui a été testé**, avec les codes d'erreur et leur signification. Ça sert pour soi-même plus tard, et pour les rapports de bug.
-2. **Falsifier** plutôt que "essayer" — un test qui ne change pas le symptôme n'est utile que s'il élimine définitivement une hypothèse.
+1. **Documenter précisément ce qui a été testé**, avec les codes d'erreur et leur signification. Ça sert pour soi-même plus tard, et pour les rapports de bug (ou pour un portfolio plus fourni).
+2. **Falsifier** plutôt que "essayer" — un test qui ne change pas le symptôme n'est utile que s'il élimine définitivement une hypothèse (J'ai aussi tenté de manipuler le driver pour essayer qu'il renvoie le core d'erreur -110, ça aurait signifie que quelque chose change, mais que neni rien n'a bougé)..
 3. **Reconnaître le moment où le bug est upstream**. Continuer à bricoler localement après ce point ne fait que cumuler des modifications qu'il faudra plus tard défaire.
 4. **Préserver l'option de retour à la normale**. C'est pour ça que `IgnorePkg` est meilleur qu'un downgrade silencieux : quand le patch upstream arrive, on s'en aperçoit (pacman le signale), et on peut le ré-essayer.
 
@@ -684,7 +726,7 @@ Pour ce cas précis, deux voies raisonnables :
 - **Attendre** : surveiller la mailing list `linux-bluetooth` et `linux-mediatek`, ainsi que les changelogs de `linux-firmware`. Quand un patch corrigeant `FUNC_CTRL (-22)` sur MT7922 apparaît, retirer `IgnorePkg` et tester.
 - **Faire remonter** : rapporter le bug sur les forums Arch et/ou la bug list MediaTek, en fournissant toutes les données collectées (versions kernel testées, versions firmware testées, codes d'erreur exacts, sortie de `dmesg` complète). Plus la précision est élevée, plus la probabilité d'un fix rapide est grande.
 
-Entre-temps, le système reste pleinement utilisable — seul le Bluetooth ne fonctionne pas. Le Wi-Fi, qui partage pourtant le même silicium, fonctionne sans accroc, ce qui est la confirmation finale que ce n'est pas du hardware mort.
+Entre-temps, le système reste pleinement utilisable — seul le Bluetooth ne fonctionne pas. Le Wi-Fi, qui partage pourtant le même silicium, fonctionne sans accroc, ce qui est la confirmation finale que ce ne semble donc pas provenir du hardware mort.
 
 ## Annexes
 
