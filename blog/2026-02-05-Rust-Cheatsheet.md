@@ -85,7 +85,10 @@ Cette contrainte n'est pas là pour embêter le développeur. Elle permet au com
 :::
 
 ### Les types de données
-
+:::tip[Information]
+Malgré ce qui est marqué en dessous, le compilateur RUST peut automatiquement déduire le type de la variable en fonction de ce qu'on lui donne comme valeur.
+Cela permet de rendre le code plus simple à lire, mais il faut bien garder à l'esprit le type de chaque variable.
+:::
 Rust est un langage à typage statique : chaque variable a un type connu à la compilation. Le compilateur peut souvent l'inférer, mais on peut aussi le spécifier explicitement.
 
 |Type|Signification|Taille (en octet)|Plage de valeur|
@@ -103,9 +106,9 @@ Rust est un langage à typage statique : chaque variable a un type connu à la c
 |`f32`|Flottant simple précision|4|≈ ±3.4 × 10³⁸|
 |`f64`|Flottant double précision (défaut)|8|≈ ±1.8 × 10³⁰⁸|
 |`bool`|Booléen|1|`true` ou `false`|
-|`char`|Caractère Unicode (sur 4 octets !)|4|Tout point de code Unicode|
+|`char`|Caractère Unicode (sur 4 octets !)|4|Tout point de code Unicode. Déclaré avec `''`|
 |`&str`|Tranche de chaîne (référence)|—|Chaîne immuable|
-|`String`|Chaîne de caractères allouée|—|Chaîne modifiable|
+|`String`|Chaîne de caractères allouée|—|Chaîne modifiable. Déclaré avec `""`|
 
 ```rust title="Déclaration de variables typées"
 let entier: i32 = 42;
@@ -118,8 +121,62 @@ let texte: &str = "Hello";
 :::tip[char en Rust]
 Contrairement au C où `char` fait 1 octet et représente un caractère ASCII, le `char` de Rust fait 4 octets et peut représenter n'importe quel caractère Unicode (lettres accentuées, émojis, idéogrammes…).
 :::
+### Gestion des string
+La distinction est tout de même importante à faire, car faire : 
+```rust
+let s1 = "This is a string";
+```
+Revient à définir ce qui s'appelle un `string slice` qui est de type `&str`. C'est une chaîne immuable qui est stockée dasn le binaire compilé. Donc cette variable vit aussi longtemps que le programme (ou son scope) vit.
+Pour le convertir en `String`, il faut manuellement **allouer** la mémoire dynamiquement pour stocker une copie modifiable de la chaîne initialement immuable :
+```rust title="conversion d'un &str vers un String"
+let s1 = "This is a string";
+let s2: String = s1.to_string();
+```
+Ou le faire en une ligne : 
+```rust
+let s1: String = "Text".to_string();
+```
 
+#### Déclaration de String
+Il y a d'autres méthodes pour directement déclarer une variable de type `String` :
+
+1. avec `String::new();` :
+```rust
+let mut s = String::new();  // Capacité = 0
+s.push_str("Hello");        // Alloue automatiquement si nécessaire
+s.push('!');                // Ajoute un caractère Unicode
+println!("{}", s);          // "Hello!"
+```
+2. Avec `String::with_capacity(n)` pour déclarer manuellement la taille alloué au String :
+```rust
+// Préalocation pour éviter les réallocations
+let mut s = String::with_capacity(20);
+s.push_str("Rust est génial");
+println!("Capacité: {}, Longueur: {}", s.capacity(), s.len());  // 20, 15
+```
+3. pour la blague, directement depuis des octets :
+```rust
+let bytes = vec![72, 101, 108, 108, 111];  // "Hello" en ASCII
+let s = String::from_utf8(bytes).unwrap();  // "Hello"
+```
+
+### Les booleens
+ça ne change pas de ce que l'on a l'habitude de voir. Ces variables ne peuvent être que dans deux états : `false` ou `true`.
+
+Elles se déclarent de cette manière : 
+```rust title="déclaration de booleens"
+let variable_true: bool = true;
+let variable_false: bool = false;
+```
+
+### Les variables mutable
+Comme on a vu, par défaut en rust, toutes les variables sont immuables, elles ne peuvent pas se voir attribuer une autre valeur. Sauf si on spécifie manuellement que la variable est mutable : 
+```rust title="déclaration de variable mutable"
+let x = 5; // x est immuable
+let mut y = 10; // y est mutable
+```
 ### Conversion de type
+
 
 En Rust, il n'existe **pas** de conversion implicite entre types numériques, contrairement au C. Toute conversion doit être explicite à l'aide du mot-clé `as`.
 
@@ -192,7 +249,7 @@ Ces opérateurs servent à comparer deux opérandes. Ils retournent un `bool` (`
 |Opérateur|Signification|Exemple|
 |--------------------|--------------------|--------------------|
 |`==`|Égal|`1 == 2` retourne `false`|
-|`!=`|Pas égal|`1 != 2` retourne `true`|
+|`!=`|Pas égal|`1 ! = 2` retourne `true`|
 |`>`|Plus grand que|`1 > 2` retourne `false`|
 |`<`|Plus petit que|`1 < 2` retourne `true`|
 |`>=`|Plus grand ou égal|`1 >= 2` retourne `false`|
@@ -203,9 +260,31 @@ let var1 = 13;
 let var2 = 12;
 let var3: bool = var1 != var2; // true
 ```
-
 :::warning[Comparaison entre types]
 Rust refusera de comparer deux valeurs de types différents (par exemple un `i32` avec un `f64`). Il faut explicitement les convertir avant.
+:::
+
+#### Comparaison de string
+Ces comparaisons fonctionnent également pour du texte, peu importe la manière de les déclarer :
+```rust
+let str1 = "hello";
+let str2 = "hello";
+let str3 = "Hello";
+let string1: String = "hello".to_string();
+let string2: String = String::from("hello");
+let string3 = "hello".to_owned();
+
+let result1 = str1 == str2;  // true
+let result2 = str1 == str3;  // false (case-sensitive)
+
+// Comparaison de deux String ensemble
+let result3 = string1 == string2;  // true
+
+// On peut également comparer des String avec des &str
+let result4 = string1 == str1;     // true
+```
+:::note
+Rust refuse de comparer des valeurs de types différent mais accepte lorsque les données à l'intérieur sont identique : `i32` et `i64` contiennent tout deux des `int`.
 :::
 
 ### Opérateurs logiques
