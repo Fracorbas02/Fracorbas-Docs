@@ -224,8 +224,8 @@ fn main() {
 }
 ```
 :::warning[Attention]
-Lorsque l'on déclare une variable "shadowé" (*désolé, je n'ai pas le terme en Français*), on ne peut pas la déclarer avec les raccourcis tels que `+=`
-Dans le code au dessus, si on déclarait le x shadowé en faisant `let x += 3`, le compilateur donnerait une erreur :
+Lorsque l'on déclare une variable masquée, on ne peut pas la déclarer avec les raccourcis tels que `+=`
+Dans le code au dessus, si on déclarait le x masquée en faisant `let x += 3`, le compilateur donnerait une erreur :
 ```
 > error: can't reassign to an uninitialized variable
 ```
@@ -233,6 +233,30 @@ Dans le code au dessus, si on déclarait le x shadowé en faisant `let x += 3`, 
 :::tip[Différence avec mut]
 Le shadowing n'est pas équivalent à `mut`. Avec `mut`, on modifie la même variable (et on ne peut pas changer son type). Avec le shadowing, on en crée une nouvelle qui réutilise le même nom.
 :::
+
+#### L'indépendance des variables masquée
+Tout comme une variable conventionnelle, lorsque l'on déclare une variable masquée, on doit également définir son type et ses caractéristiques.
+
+Cette variable masquée n'hérite pas des propriétés de mutation de sa variable mère. Il faut manuellement le repréciser
+```rust
+let mut x: i32 = 10;
+{
+	let x: i32 = 15;
+	let x = 10; // Erreur, la variable masquée n'est pas mutable
+	print!("{x}");
+}
+```
+Cela devrait vous donner :
+```rust
+error[E0384]: cannot assign twice to immutable variable `x`
+ --> main.rs:5:6
+  |
+4 |         let x: i32 = 15;
+  |             - first assignment to `x`
+5 |         x += 10; // Erreur, la variable masquée n'est pas mutable
+  |         ^^^^^^^ cannot assign twice to immutable variable
+```
+
 
 ## Les opérateurs
 
