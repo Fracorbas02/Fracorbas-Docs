@@ -5,7 +5,7 @@ authors: [bastien]
 tags: [cheatsheet, informatique]
 date: 2026-02-05
 last_update:
-  date: 2026-05-16
+  date: 2026-05-18
   author: bastien
 ---
 :::warning[Information]
@@ -523,17 +523,41 @@ println!("{:#x}", 255);         // 0xff
 C'est un peu plus verbeux qu'en C, mais bien plus sûr. Il faut importer le module `io` de la bibliothèque standard.
 
 ```rust title="Lecture d'une ligne au clavier"
-use std::io;
+use std::io; //On importe la bibliothèque
 
 fn main() {
-    let mut entree = String::new();
+    let mut entree = String::new(); //Création d'un String vide MUTABLE !
     
     println!("Entrez quelque chose :");
     io::stdin()
-        .read_line(&mut entree)
-        .expect("Erreur de lecture");
+        .read_line(&mut entree) // Ajoute l'input à la fin de la chaine
+        .expect("Erreur de lecture"); //ajoute un message d'erreur personnalisé en cas d'échec
     
     println!("Vous avez écrit : {}", entree);
+}
+```
+
+#### Cas spécifique des lectures multiples
+Comme on peut le voir au dessus, la méthode `read_line` ajoute à la fin de la variable la chaine qui a été écrite.
+
+Cela signifie que dans un programme interractif où l'on doit demander plusieurs variables à l'utilisateur, il est impératif de vider la variable au préalable, par exemple : 
+```rust title="Lecture de multiples lignes au clavier"
+use std::io;
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    let count: i32 = input.trim().parse().unwrap();
+    
+    let mut result: i32 = 0;
+    let mut counter: i32;
+    for _i in 0..count {
+        input.clear(); //vider la variable input pour pouvoir demander une autre valeur
+        io::stdin().read_line(&mut input).unwrap(); //ajout dans une string vide
+        counter = input.trim().parse().unwrap();
+        result += counter;
+    }
+    print!("{}",result);
 }
 ```
 
@@ -654,6 +678,16 @@ loop {
 :::
 
 ### La boucle `for`
+:::tip [Warning variable inutilisée dans le compilateur]
+Il est possible que dans l'utilisation de la boucle for, qu'une des variables que vous initialisez une variable dans votre boucle qui ne sera plus utilisée.
+Le compilateur vous mettra un warning qu'une variable a été inutilisée.
+Pour que cette erreur ne s'affiche pas, déclarez la variable avec un `_` directement dans la boucle :
+```rust
+for _i in 0..5 {
+	...
+}
+```
+:::
 
 C'est la plus utilisée en Rust. Elle itère sur un **itérateur** (un tableau, un intervalle, une collection…).
 
