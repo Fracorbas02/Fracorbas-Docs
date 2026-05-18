@@ -211,15 +211,25 @@ Par convention, les constantes sont écrites en `SCREAMING_SNAKE_CASE`. Et le `_
 
 Rust permet de "redéclarer" une variable avec le même nom. La précédente est alors masquée par la nouvelle. Cela permet, entre autres, de changer le type d'une variable.
 
+On peut faire cela en définissant des variables au sein de leur propre "scope". En Rust, le scope est défini par les `{}`, une variable ne vit qu'entre ces accolades. Le shadowing permet en définissant un nouveau scope de modifier temporairement la variable initiale
 ```rust title="Shadowing"
-let x = 5;
-let x = x + 1;       // x vaut maintenant 6
-let x = x * 2;       // x vaut maintenant 12
-
-let valeur = "42";
-let valeur: i32 = valeur.parse().unwrap(); // Le type a changé !
+fn main() {
+    let x: i32 = 5;
+    println!("x is: {x}");       // Ici x vaut 5
+    {
+        let x = x + 3;           // On déclare la même variable, mais cette fois-ci dans un autre scope
+        println!("x is: {x}");   // Ici x vaut 8
+    }
+    println!("x is: {x}");       // Ici c vaut 5
+}
 ```
-
+:::warning[Attention]
+Lorsque l'on déclare une variable "shadowé" (*désolé, je n'ai pas le terme en Français*), on ne peut pas la déclarer avec les raccourcis tels que `+=`
+Dans le code au dessus, si on déclarait le x shadowé en faisant `let x += 3`, le compilateur donnerait une erreur :
+```
+> error: can't reassign to an uninitialized variable
+```
+:::
 :::tip[Différence avec mut]
 Le shadowing n'est pas équivalent à `mut`. Avec `mut`, on modifie la même variable (et on ne peut pas changer son type). Avec le shadowing, on en crée une nouvelle qui réutilise le même nom.
 :::
