@@ -837,6 +837,9 @@ fn main() {
     saluer();
 }
 ```
+:::tip
+Rust résout le nom des fonction peu importe leur ordre. Donc une fonction peut être appelée avant sa déclaration
+:::
 
 ### Paramètres et type de retour
 
