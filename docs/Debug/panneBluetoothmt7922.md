@@ -8,7 +8,15 @@ last_update:
   date: 2026-05-15
   author: bastien
 ---
-
+:::info[Update du 19-05-2026 - C'est corrigé]
+Ce problème a été résolue. Visiblement un patch a été appliqué pour corriger un problème sur un driver. Ce patch a été marqué comme stable, balancé dans les versions LTS du kernel et pour problèms sur les puces m;7922...
+D'où le fait que dans mon test en dessous de revenir sur une version stable échouait, cette version aussi avait le problème vu qu'il y avait été backporté.
+Quelques sources : 
+* [Arch linux forum - Bluetooth no longer initialize](https://bbs.archlinux.org/viewtopic.php?id=313561)
+* [Arch linux forum - Bluetooth not working after kernel update](https://bbs.archlinux.org/viewtopic.php?id=313552)
+* [Arch linux forum - Bluetooth stopped working [SOLVED]](https://bbs.archlinux.org/viewtopic.php?pid=2298496#p2298496)
+:::
+ 
 # Panne Bluetooth Mediatek MT7922 sous Arch Linux — méthodologie de diagnostic
 
 Ayant passé un long moment à chercher une solution, j'ai retracé dans ce document tout ce que j'ai fais pour trouver la source du problème. Mon poste un un Lenovo Legion équipé d'une puce combo Wi-Fi+Bluetooth Mediatek MT7922, sous Arch Linux. L'objectif n'est pas tant la résolution finale — qui s'est avérée être un bug upstream non corrigeable localement — que la **méthodologie** et les **concepts techniques** sous-jacents qui s'appliquent à n'importe quelle panne hardware sous Linux.
