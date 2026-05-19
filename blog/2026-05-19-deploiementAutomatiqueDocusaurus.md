@@ -1,7 +1,7 @@
 ---
 slug: deploiement-auto-docusaurus-o2switch
 title: Adieu le zip et le dézip, j'automatise mon Bastodoc
-authors: [Bastien]
+authors: [bastien]
 tags: [ci-cd, github-actions, docusaurus, o2switch, devops]
 date: 2026-05-19
 last_update:
