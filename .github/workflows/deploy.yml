@@ -1,0 +1,74 @@
+name: Build & Deploy to o2switch
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Docusaurus
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build/
+          retention-days: 1
+
+  deploy:
+    name: Deploy to o2switch
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: build
+
+      - name: Get runner public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
+      - name: Whitelist runner IP
+        run: |
+          curl -sm 45 \
+            -H "Authorization: cpanel ${{ secrets.CPANEL_USERNAME }}:${{ secrets.CPANEL_API_TOKEN }}" \
+            "https://${{ secrets.CPANEL_SERVER }}:2083/execute/SshWhitelist/add?address=${{ steps.ip.outputs.ipv4 }}&port=22"
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy via rsync
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
+            build/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_TARGET_PATH }}
+
+      - name: Remove runner IP from whitelist
+        if: always()
+        run: |
+          curl -sm 45 \
+            -H "Authorization: cpanel ${{ secrets.CPANEL_USERNAME }}:${{ secrets.CPANEL_API_TOKEN }}" \
+            "https://${{ secrets.CPANEL_SERVER }}:2083/execute/SshWhitelist/remove?address=${{ steps.ip.outputs.ipv4 }}&port=22"
