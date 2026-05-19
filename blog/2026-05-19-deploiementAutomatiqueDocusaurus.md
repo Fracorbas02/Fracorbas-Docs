@@ -20,6 +20,9 @@ Au bout d'un moment, j'en ai eu marre. Surtout que je sais qu'on est en 2026 et 
 Ma première idée a été l'outil **Git Version Control** intégré au cPanel d'o2switch. Sur le papier, ça paraît parfait : tu connectes ton dépôt GitHub, le serveur va chercher les nouvelles versions, ça déploie. Sauf qu'en pratique, il faut quand même **cliquer manuellement** sur "Update from Remote" puis "Deploy HEAD Commit" à chaque fois. On gagne sur le zip/dézip, mais on reste prisonnier de l'interface web. Pas terrible.
 
 J'ai donc cherché plus loin et je suis tombé sur quelque chose que je n'attendais pas : **o2switch utilise lui-même Docusaurus pour sa propre documentation, et leurs workflows GitHub Actions sont publics**. Mieux : ils ont déployé récemment une **API officielle** pour gérer la whitelist SSH du firewall depuis l'extérieur, ce qui résout pile le problème que je redoutais.
+
+C'est donc leur documentation officielle qui a fini par me permettre de terminer la mise en place de cette automatisation : 
+* [o2switch doc - Déploiement ci/cd de docusaurus](https://faq.o2switch.fr/cpanel/outils/exception-parefeu/#exemple-de-d%C3%A9ploiement-de-docusaurus)
 :::info[API expérimentale]
 Pour le moment l'API est en version expérimentale. Actuellement la création d'une API donne les même droit que notre utilisateur à cet API. Donc soyez prudent en l'utilisant.
 :::
