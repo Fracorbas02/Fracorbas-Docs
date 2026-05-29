@@ -9,9 +9,9 @@ last_update:
   author: bastien
 ---
 
-Ça fait un petit bout de temps que je fais des articles sur tout et rien, que je teste des choses sur un peu tout ce qui m'intéresse.
+Ça fait un petit bout de temps que je fais des articles sur tout et rien, que je teste des choses sur ce qui me passe sous la main ou que je vois dans ma vie professionnelle.
 
-Mais je dois reconnaître qu'il me manque pas mal de chose lorsque j'ai besoin de tester des éléments concrets, des protocoles sécurisés, que ça soit de l'authentification ou autre, très souvent on a besoin d'avoir une petite infra personnelle 
+Mais je dois reconnaître qu'il me manque pas mal de chose lorsque j'ai besoin de tester des éléments concrets, que ça soit de l'authentification, des protocoles  ou autre, très souvent on a besoin d'avoir une petite infra personnelle.
 
 <!--truncate -->
  Ducoup voilà ce que je vais faire : une petite infra pour tester tout un tas de truc. Et je me servirais de ça dans de futurs articles afin d'avoir des éléments plus complets.
@@ -47,4 +47,8 @@ graph TD
 ```    
 Comme j'ai pu l'expliquer dans un article précédent : [Les réseaux proxmox](./Les-Reseaux-Proxmox), je vais pouvoir mettre tout ça en pratique, et notamment mettre des interfaces vlan dans mon OpnSense.
 
-Donc voilà l'objectif, je vais petit à petit faire 
+Donc voilà l'objectif, je vais petit à petit faire ça dans des articles à venir. Quelques mots tout de même sur tout ça.
+
+Déjà, comme vous vous en doutez, tout est sous Linux, que ça soit l'authentification, la rétention des logs, leur analyse. Grosso modo, ce que je veux réaliser c'est une infra certes simples mais utilisant les bonnes pratiques de l'informatique.
+
+On se redit dans pas si longtemps pour le début de tout ça, expliquer l'interraction de chaque serveurs / service dans un seul article serait trop complexe à écrire et à lire alors flemme.
