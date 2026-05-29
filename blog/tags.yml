@@ -43,3 +43,7 @@ gaming:
   label: gaming
   permalink: /gaming
   description: Les articles sur les jeux vidéos. Avis ou review tout est là
+lab:
+  label: lab
+  permalink: /lab
+  description: tous les articles en lien avec mon home-lab. Je teste là dedan absolument tout et n'importe quoi.
