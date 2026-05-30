@@ -1,5 +1,5 @@
 ---
-slug: homelab-installationFreeIPA
+slug: homelab-installation-free-ipa
 title: "Installation de FreeIPA dans mon home-lab"
 authors: [bastien]
 tags: [informatique, open-source, Système, Linux, lab]
@@ -9,7 +9,7 @@ last_update:
   author: bastien
 ---
 
-Pour faire suite à mes autres articles, je mets en place ici une solution d'authentification centralisée. Un annuaire open source nommé FreeIPA qui permet de faire tout un tas de chose, u pau à la `Active Directory` de Microsoft.
+Pour faire suite à mes autres articles, je mets en place ici une solution d'authentification centralisée. Un annuaire open source nommé FreeIPA qui permet de faire tout un tas de chose, un peuu à la `Active Directory` de Microsoft.
 
 Ce serveur sera central dans l'authentification sur le réseau, la résolution DNS, la gestion des utilisateurs et des machines.
 <!--truncate-->
@@ -24,12 +24,12 @@ L'avantage de FreeIPA est que c'est un outil particulièrement complet avec la p
 * PKI afin de gérer des certificats et faire office d'autorité de certification principale
 * Authentification sur le réseau via des protocoles comme RADIUS ou kerberos permettant ainsi d'authentifier un utilisateur ou une machine sur le réseau de manière sécurisée en utilisant l'annuaire LDAP
 
-De surctoît, c'est une solution développée par RedHat qui reste une entité reconnue pour la sécurité des solutions qu'ils développent. Et qui d'ailleur sont utilisées mondialement.
-
+De surcroît, c'est une solution développée par RedHat qui reste une entité reconnue pour la sécurité des solutions qu'ils développent. Et qui d'ailleurs sont utilisées mondialement.
+Allez jeter un coup d'oeil à leur documentation pour plus de précision sur la solution : [Documentation officielle FreeIPA](https://www.freeipa.org/page/Main_Page)
 ## Quel OS utiliser ?
 Là dessus, on a plein de solutions différentes. On peut se dire "FreeIPA = RedHat" donc on va aller sur RHEL. Souci, ça reste une solution privée même si on peut avoir des licences pour des environnements restreints (comme des labs).
 
-Je commpte partir sur Fedora qui est en fait l'origine de RHEL. RedHat se base des sources de Fedora pour construire un OS plus restreint / sécurisé afin d'en faire une solution propre à une utilisation professionnelle pouvant remplacer microsoft.
+Je compte partir sur Fedora qui est en fait l'origine de RHEL. RedHat se base des sources de Fedora pour construire un OS plus restreint / sécurisé afin d'en faire une solution propre à une utilisation professionnelle pouvant remplacer microsoft.
 Et donc tous les outils nécessaire seront disponible facilement / nativement dans fedora.
 
 ## Installation de fedora
@@ -50,14 +50,17 @@ sudo ip route add 10.0.0.0/8 dev [l'interface réseau] via 192.168.1.250
 me permet de me connecter à tous les réseaux de mon bridge `internal`.
 :::
 :::note
-j'ai un souci que je ne comprend toujours pas. Il m'est impossible de me connecter à mon pare-feu sur son interface "WAN" (qui est en réalité sur mon LAN) :
+j'ai un souci que je ne comprends toujours pas. Il m'est impossible de me connecter à mon pare-feu sur son interface "WAN" (qui est en réalité sur mon LAN) :
 ```bash
 curl https://192.168.1.250 -k
 curl: (35) Recv failure: Connexion ré-initialisée par le correspondant
 ```
 J'ai cherché pas mal de temps sur les trames qui passent et ça donnerait presque l'impression qu'il y a un souci, j'ai tout le temps un ttl à 63 contre 64 pour n'importe quelle autre destination.
-je n'ai pas pour le moment trouvé, en tout cas la route que je donne au dessus permet de se connecter sur les interfaces vlan du pare-feu.
-Je mettrai ça à jour si jamais je trouve la solution (et ça ne provient pas d'un reply-to ou d'un souci du driver vtnet de freeBSD, j'ai vérifié)
+
+Cela signifie que j'ai un saut supplémentaire quelque part (ma trame traverse un autre routeur, très certainement ma box internet). Bien que cela ne devrait pas avoir d'incidence sur la connectivité réseau, le problème est toujours là.
+
+je n'ai pas pour le moment trouvé la source du problème. En tout cas la route que je donne au dessus permet de se connecter sur les interfaces vlan du pare-feu, ce qui fonctionne.
+Je mettrai cette note à jour si jamais je trouve la solution (et ça ne provient pas d'un reply-to ou d'un souci du driver vtnet de freeBSD, j'ai vérifié)
 :::
 
 Une fois l'installation terminée, le serveur redémarre et vous pouvez vous connecter avec le compte que vous avez configuré.
@@ -70,7 +73,7 @@ Avant de commencer l'installation de l'outil, il y a pas mal de points important
 sudo dnf upgrade --refresh
 ```
 :::info
-Si vous avez correctement configuré vos interface réseau pas comme moi vous n'aurez pas de souci. Pour mon cas, je n'avais aucune résolution de nom qui se faisait :
+Si vous avez correctement configuré vos interface réseau pas comme moi vous n'aurez pas de souci. Dans mon cas, je n'avais aucune résolution de nom qui se faisait :
 ```bash
 ~$resolvectl status
 Global
@@ -96,7 +99,7 @@ sudo nmcli connection modify "Wired connection 1" ipv4.dns "8.8.8.8 1.1.1.1"
 sudo nmcli connection modify "Wired connection 1" ipv4.ignore-auto-dns no
 sudo nmcli connection up "ens18"
 ```
-3. Vérifiez que ça ait bien été pris en compte :
+3. Vérifiez que cela ait bien été pris en compte :
 
 ```bash
 resolvectl status
@@ -115,10 +118,10 @@ Current DNS Server: 8.8.8.8
 
 
 ### Configuration hostname et DNS
-C'est l'un des point les plus importants de kerberos (le protocole qui est au coeur de l'authentification sur FreeeIPA) qui est extrêmement sensible à la résolution DNS.
+C'est l'un des points les plus importants de kerberos (le protocole qui est au coeur de l'authentification sur FreeIPA) qui est extrêmement sensible à la résolution DNS.
 Lorsque l'on installe FreeIPA, ce dernier vérifie que le hostname ne soit pas `localhost` et qu'il soit pleinement qualifié (FQDN), qu'il soit résolvable et que le reverse DNS de l'IP résolue corresponde au hostname.
 
-Beaucoup d'explication, mais pas beaucoup de commandes :
+Beaucoup d'explications, mais pas beaucoup de commandes :
 ```bash
 # Définition du nom de domaine de façon permanente
 sudo hostnamectl set-hostname freeipa.home.lan
@@ -136,7 +139,7 @@ FreeIPA refusera de s'installer si votre nom de domaine n'a qu'un seul niveau.
 * `freeipa.lan` -> Ne fonctionnera pas
 * `freeipa.home.lan` -> Fonctionnera
 
-La raison est que FreeIPA s'appuie sur BIND et Kerberos qui tout deux demandent impérativement un domaine DNS avec **au moins** deux labels
+La raison est que FreeIPA s'appuie sur BIND et Kerberos qui tous deux demandent impérativement un domaine DNS avec **au moins** deux labels
 :::
 Pour ma part cette modification est :
 ```bash
@@ -145,9 +148,9 @@ Pour ma part cette modification est :
 #### Vérification
 Pour vérifier ça :
 ```bash
-hostname -f 			# Doit retourner le domaine complet, pour moi : freeipa.lan
-ping -c1 freeipa.lan 	# Ou avec le nom de votre serveur, ce ping doit fonctionner et aller sur l'IP que vous avez défini dans le fichier hosts
-ping -c1 google.com 	# Juste pour vérifier la résolution de nom internet
+hostname -f 				# Doit retourner le domaine complet, pour moi : freeipa.home.lan
+ping -c1 freeipa.home.lan 	# Ou avec le nom de votre serveur, ce ping doit fonctionner et aller sur l'IP que vous avez défini dans le fichier hosts
+ping -c1 google.com 		# Juste pour vérifier la résolution de nom internet
 ```
 
 ### Configuration des règles de pare-feu
@@ -176,7 +179,7 @@ Une fois installé il suffit de :
 sudo ipa-server-install
 ```
 
-Vous serez alors amené dans un prompt interractif vous demandant :
+Vous serez alors amené dans un prompt interactif vous demandant :
 1. si le script doit installer un DNS intégré (BIND)
 	> Pour moi oui
 
@@ -195,7 +198,7 @@ Une fois l'installation terminée, vous aurez une page web accessible en HTTPS s
 Si tout est fonctionnel, vous devriez arriver sur cette page une fois fait :
 ![Login Screen FreeIPA](./2026-05/FreeIPA_LoginScreen.png)
 :::note
-Lorsque vous vous connecte sur l'IP de votre serveur, automatiquement, le serveur vous redirige sur son nom de domaine.
+Lorsque vous vous connectez sur l'IP de votre serveur, automatiquement, le serveur vous redirige sur son nom de domaine.
 Il peut être nécessaire sur votre machine d'ajouter le nom de domaine de votre serveur avec son IP pour que cette résolution fonctionne.
 
 Pour ma part, j'ai modifié mon fichier `/etc/hosts` comme suit :
