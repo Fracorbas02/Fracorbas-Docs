@@ -190,4 +190,18 @@ Vous serez alors amené dans un prompt interractif vous demandant :
 7. Si oui lesquels
 8. Vérifier ce que vous avez mis et accepter l'installation
 
+Une fois l'installation terminée, vous aurez une page web accessible en HTTPS sur l'IP
 
+Si tout est fonctionnel, vous devriez arriver sur cette page une fois fait :
+![Login Screen FreeIPA](./2026-05/FreeIPA_LoginScreen.png)
+:::note
+Lorsque vous vous connecte sur l'IP de votre serveur, automatiquement, le serveur vous redirige sur son nom de domaine.
+Il peut être nécessaire sur votre machine d'ajouter le nom de domaine de votre serveur avec son IP pour que cette résolution fonctionne.
+
+Pour ma part, j'ai modifié mon fichier `/etc/hosts` comme suit :
+```bash
+10.20.20.1 		freeipa.home.lan
+```
+:::
+
+Je consacrerai un autre article sur la configuration de cet outil ainsi que sur l'enrollement de serveurs au sein de FreeIPA. Jusque là, je vous dis à la prochaine !
