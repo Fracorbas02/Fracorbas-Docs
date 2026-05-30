@@ -36,3 +36,30 @@ Et donc tous les outils nécessaire seront disponible facilement / nativement da
 Il faut pour ça aller récupérer sa meilleure iso [fedora server](https://fedoraproject.org/server/download/) et l'envoyer dans proxmox.
 
 Pour ma part, j'ai donc créé mon serveur sur mon bridge `internal` avec le vlan 20 (donc sur le réseau `10.20.20.0/24`)
+
+Une fois le serveur lancé, vous aurez une belle petite interface graphique qui vous permet de tout installer en quelques clics.
+
+:::info apparté
+Pour l'administration de mes serveurs qui sont pour le moment sur mon bridge internal, j'ai besoin de me connecter dessus en direct. Dans un monde idéal, on doit utiliser un bastion pour se connecter.
+
+Mais dans mon infra, un simpe 
+```bash
+sudo ip route add 10.0.0.0/8 dev [l'interface réseau] via 192.168.1.250
+```
+me permet de me connecter à tous les réseaux de mon bridge `internal`.
+:::
+
+:::note
+j'ai un souci que je ne comprend toujours pas. Il m'est impossible de me connecter à mon pare-feu sur son interface "WAN" (qui est en réalité sur mon LAN) :
+```bash
+curl https://192.168.1.250 -k
+curl: (35) Recv failure: Connexion ré-initialisée par le correspondant
+```
+J'ai cherché pas mal de temps sur les trames qui passent et ça donnerait presque l'impression qu'il y a un souci, j'ai tout le temps un ttl à 63 contre 64 pour n'importe quelle autre destination.
+je n'ai pas pour le moment trouvé, en tout cas la route que je donne au dessus permet de se connecter sur les interfaces vlan du pare-feu.
+Je mettrai ça à jour si jamais je trouve la solution (et ça ne provient pas d'un reply-to ou d'un souci du driver vtnet de freeBSD, j'ai vérifié)
+:::
+
+Une fois l'installation terminée, le serveur redémarre et vous pouvez vous connecter avec le compte que vous avez configuré.
+
+
