@@ -47,3 +47,8 @@ lab:
   label: lab
   permalink: /lab
   description: tous les articles en lien avec mon home-lab. Je teste là dedan absolument tout et n'importe quoi.
+
+lab:
+  label: tesla
+  permalink: /tesla
+  description: en rapport avec des éléments de tesla. Mes retours d'expérience ou des informations relatives à cette marque
