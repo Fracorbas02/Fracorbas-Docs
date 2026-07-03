@@ -48,7 +48,7 @@ jobs:
 
       - name: Get runner public IP
         id: ip
-        uses: haythem/public-ip@v1.3
+        run: echo "ipv4=$(curl -s https://api.ipify.org)" >> $GITHUB_OUTPUT
 
       - name: Whitelist runner IP
         run: |
