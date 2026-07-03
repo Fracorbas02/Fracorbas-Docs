@@ -1,5 +1,8 @@
 name: Build & Deploy to o2switch
 
+env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'false'
+
 on:
   push:
     branches: [main]
@@ -40,6 +43,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
+
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
@@ -72,6 +76,7 @@ jobs:
             -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
             build/ \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_TARGET_PATH }}
+
       - name: Remove runner IP from whitelist
         if: always()
         run: |
