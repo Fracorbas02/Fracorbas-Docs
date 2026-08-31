@@ -28,7 +28,8 @@ C'est la première chose à comprendre : `grep` n'a pas un seul moteur de regex.
 
 ```mermaid
 flowchart TD
-    Q["Que cherche-t-on ?"] --> F["Une chaîne exacte\n(une IP, une MAC)"] --> FO["grep -F"]
+    Q["Que cherche-t-on ?"] --> F["Une
+ chaîne exacte\n(une IP, une MAC)"] --> FO["grep -F"]
     Q --> E["Un motif avec |, +, ?\nsans fioritures PCRE"] --> EO["grep -E"]
     Q --> P["Du lookaround, des\nbackreferences, \\d \\s"] --> PO["grep -P (GNU)\nou rg -P"]
     Q --> G["Dans un dépôt git,\nbeaucoup de fichiers"] --> GO["rg (ripgrep)"]
@@ -69,7 +70,8 @@ grep -vE '^\s*(!|#)' running-config.cfg | grep -vE '^\s*$'
 grep -i 'bgp' messages        # BGP, bgp, Bgp...
 grep -w 'UP' interfaces.txt   # UP, mais pas "STOPUP" ni "GROUP"
 
-# -x : la ligne entière doit matcher (utile pour des valeurs exactes)
+# -x : la ligne entière do
+it matcher (utile pour des valeurs exactes)
 grep -x 'shutdown' running-config.cfg
 ```
 
@@ -96,7 +98,7 @@ grep -C5 'BGP-5-ADJCHANGE' /var/log/messages
 
 ## Recherches récursives ciblées
 
-Le grand classique : chercher un motif dans une arborescence entière. Le piège, c'est de faire un `grep -r motif *` et de recurpérer du binaire, des fichiers de swap, du `.git/`, bref du bruit. GNU grep propose des filtres d'inclusion/exclusion précis.
+Le grand classique : chercher un motif dans une arborescence entière. Le piège, c'est de faire un `grep -r motif *` et de récupérer du binaire, des fichiers de swap, du `.git/`, bref du bruit. GNU grep propose des filtres d'inclusion/exclusion précis.
 
 ```bash
 # Récursif, uniquement dans les fichiers .cfg
@@ -104,7 +106,7 @@ grep -r --include='*.cfg' 'channel-group' /tftpboot/
 
 # Récursif, en excluant les répertoires .git et les backups
 grep -r --exclude-dir='.git' --exclude='*.bak' 'mtu 9000' .
-	# -r ne suit pas les liens symboliques ; -R les suit
+# -r ne suit pas les liens symboliques ; -R les suit
 grep -rl --include='*.conf' 'bgp' /etc/
 ```
 
@@ -116,7 +118,8 @@ grep -rL --include='*.cfg' 'ntp server 10.10.10.1' /tftpboot/configs/
 
 ## Les expressions rationnelles qui servent vraiment
 
-Plutôt que la théorie, des motifs que j'utilise réellement sur des configs et des logs.
+Plutôt que la théorie, des motifs que j'utilise réellement sur des configs
+ et des logs.
 
 ```bash
 # Toutes les interfaces avec leur nom exact (on capture juste le motif)
@@ -147,19 +150,20 @@ grep -nP '^(.*)\n\1$' running-config.cfg
 ```
 
 :::warning Le piège du multiligne
-Par défaut, `.` et `\n` ne traversent pas les fins de ligne : grep travaille ligne par ligne. Pour matcher un motif **à cheval sur plusieurs lignes**, il faut `-z` (qui rend l'entrée « NUL-sépareée «). Dans un fichier sans octet NUL, cela revient à traiter tout le fichier comme une seule grande ligne.
+Par défaut, `.` et `\n` ne traversent pas les fins de ligne : grep travaille ligne par ligne. Pour matcher un motif **à cheval sur plusieurs lignes**, il faut `-z` (qui rend l'entrée « NUL-séparée »). Dans un fichier sans octet NUL, cela revient à traiter tout le fichier comme une seule grande ligne.
 :::
 
 ```bash
-# -z + -X + -o : extraire tout un bloc d'interface contenant un mtu 9000
+# -z + -P + -o : extraire tout un bloc d'interface contenant un mtu 9000
 grep -Pzo 'interface \S+[\s\S]*?mtu 9000[\s\S]*?!\s*\n' running-config.cfg
 ```
 
 Ici `[\s\S]*?` est l'équivalent non-avide de `(?s).*?` (le `?` rend la quantification non-gourmande). C'est puissant, mais dès qu'on en est là, je vous le dis : un petit `awk` ou `sed` entre les blocs sera souvent plus lisible pour un collègue qui relit. grep reste roi pour **trouver*, pas pour **transformer**.
 
-## Cas concrets d'admin réseau
+## Cas concrets 
+d'admin réseau
 
-Quelques recettes que j'utilise reellement sur du Arista EOS / Cisco, au-delè du simple » cherche-moi ce mot ».
+Quelques recettes que j'utilise réellement sur du Arista EOS / Cisco, au-delà du simple « cherche-moi ce mot ».
 
 ```bash
 # Combien d'interfaces ont une MTU jumbo (9000) dans un dump de conf ?
@@ -168,7 +172,7 @@ grep -c 'mtu 9000' running-config.cfg
 # Les port-channels actifs en LACP, uniquement les noms, trkɳ uniques
 grep -oE 'interface (Po|Port-Channel)[0-9]+' running-config.cfg | sort -u
 
-# Les events BGP de changement de voisinage sur les dernères 24h
+# Les events BGP de changement de voisinage sur les dernières 24h
 grep -iE '%BGP-[0-9]+-ADJCHANGE' /var/log/syslog
 
 # Les lignes de log entre deux horodatages (approche simple par plage)
@@ -184,7 +188,7 @@ ssh admin@leaf-01 'show running-config' | grep -iE 'interface (Ethernet|Vlan)|mt
 ```
 
 :::tip grep n'est pas un parser
-`grep` cherche des lignes, il ne comprend pas la structure d'une config. Pour extraire proprement un bloc``interface … !` complet, `awk '/^interface/{p=1} p{print} /^!/{p=0}'` est plus juste que n'importe quelle gymnastique QCRE. grep trouve, awk structure.
+`grep` cherche des lignes, il ne comprend pas la structure d'une config. Pour extraire proprement un bloc `interface … !` complet, `awk '/^interface/{p=1} p{print} /^!/{p=0}'` est plus juste que n'importe quelle gymnastique PCRE. grep trouve, awk structure.
 :::
 
 ## grep vs ripgrep : quand changer d'outil
@@ -198,7 +202,8 @@ ssh admin@leaf-01 'show running-config' | grep -iE 'interface (Ethernet|Vlan)|mt
 | Smart case (insensible seulement si minuscules) | non | `-S` |
 | Filtres par type de fichier | `--include` | `-t conf`, `-t yaml` |
 | Exclure un glob | `--exclude` | `-g '!*.log'` |
-| Fichiers cachés | inclus par défaut | ignorés (`--hidden` pour les voir) |
+| Fichier
+s cachés | inclus par défaut | ignorés (`--hidden` pour les voir) |
 | PCRE (lookaround) | `-P` (GNU) | `-P` (si compilé avec pcre2) |
 | Multiligne | `-z` + `-P` | `--multiline`, `--multiline-dotall` |
 
@@ -213,7 +218,7 @@ rg -t conf -g '!*.log' 'mtu 9000' .
 rg --multiline -U 'interface \S+[\s\S]*?mtu 9000[\s\S]*?!\s*\n' running-config.cfg
 ```
 
-Ma règle de poche : si je cherche dans un fichier unique ou que je pipe la sortie d'une commande, c'est `grep`. Dés que je cherche dans une arborescence, un dépôt ou un gros volume de configs, c'est `rg`. Et si je dois **transformer** ce que je trouve, je passe à `awk`/`sed`.
+Ma règle de poche : si je cherche dans un fichier unique ou que je pipe la sortie d'une commande, c'est `grep`. Dès que je cherche dans une arborescence, un dépôt ou un gros volume de configs, c'est `rg`. Et si je dois **transformer** ce que je trouve, je passe à `awk`/`sed`.
 
 ## Quelques pièges et bons réflexes
 
@@ -226,7 +231,8 @@ Ma règle de poche : si je cherche dans un fichier unique ou que je pipe la sort
 
 ## Pour résumer
 
-`grep` n'est pas un « cherche-moi ce mot ». C'est un sélecteur de lignes configurable à quatre niveaux : le **moteur** (`-F`/`-E`/`-P`), le **filtre** (`-v`/`-w`/`-x`/`-i`), le **contexte** (`-n`/`-A`/`-B`/`-C`) et le **périmètre** (`-r`/`--include /`--exclude-dir`). Maîtriser ces quatre axes, c'est passer de « j'ai 200 résultats dont la moitié inutiles » à « j'ai exactement ce que je cherche, avec le contexte, dans le bon fichier ». Et savoir quand `rg` ou `awk` prend le relais, c'est ce qui distingue un usage efficace d'un usage bourrin.
+`grep` n'est pas un « cherche-moi ce mot ». C'est un sélecteur de lignes configurable à quatre niveaux : le **moteur** (`-F`/`-E`/`-P`), le **filtre** (`-v`/`-w`/`-x`/`-i`), le **contexte** (`-n`/`-A`/`-B`/`-C`) et le **périmètre** (`-r`/`-
+-include /`--exclude-dir`). Maîtriser ces quatre axes, c'est passer de « j'ai 200 résultats dont la moitié inutiles » à « j'ai exactement ce que je cherche, avec le contexte, dans le bon fichier ». Et savoir quand `rg` ou `awk` prend le relais, c'est ce qui distingue un usage efficace d'un usage bourrin.
 
 Quelques ressources pour aller plus loin :
 - [grep(1) — man page GNU](https://www.man7.org/linux/man-pages/man1/grep.1.html)
