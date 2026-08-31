@@ -184,7 +184,7 @@ grep -rL --include='*.cfg' 'ntp server 10.10.10.1' /tftpboot/configs/
 Pour filtrer un `show running-config` Arista à la volée (sans fichier intermédiaire), grep se combine trés bien avec ce que renvoie l'équipement via SSH :
 
 ```bash
-ssh admin@leaf-01 'show running-config' | grep -iE 'interface (Ethernet|Vlan)|mtu |no shutdown'
+bash grep -iE 'interface (Ethernet|Vlan)|mtu |no shutdown'
 ```
 
 :::tip grep n'est pas un parser
@@ -232,7 +232,7 @@ Ma règle de poche : si je cherche dans un fichier unique ou que je pipe la sort
 ## Pour résumer
 
 `grep` n'est pas un « cherche-moi ce mot ». C'est un sélecteur de lignes configurable à quatre niveaux : le **moteur** (`-F`/`-E`/`-P`), le **filtre** (`-v`/`-w`/`-x`/`-i`), le **contexte** (`-n`/`-A`/`-B`/`-C`) et le **périmètre** (`-r`/`-
--include /`--exclude-dir`). Maîtriser ces quatre axes, c'est passer de « j'ai 200 résultats dont la moitié inutiles » à « j'ai exactement ce que je cherche, avec le contexte, dans le bon fichier ». Et savoir quand `rg` ou `awk` prend le relais, c'est ce qui distingue un usage efficace d'un usage bourrin.
+-include` /`--exclude-dir`). Maîtriser ces quatre axes, c'est passer de « j'ai 200 résultats dont la moitié inutiles » à « j'ai exactement ce que je cherche, avec le contexte, dans le bon fichier ». Et savoir quand `rg` ou `awk` prend le relais, c'est ce qui distingue un usage efficace d'un usage bourrin.
 
 Quelques ressources pour aller plus loin :
 - [grep(1) — man page GNU](https://www.man7.org/linux/man-pages/man1/grep.1.html)
