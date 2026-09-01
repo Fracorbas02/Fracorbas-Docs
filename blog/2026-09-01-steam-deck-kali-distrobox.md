@@ -13,6 +13,8 @@ Voilà maintenant que j'ai une Steam Deck entre les mains, je me suis dit que ce
 
 *Spoiler : non, ça ne l'a pas été.*
 
+<!-- truncate -->
+
 Avant de commencer, une petite mise en bouche ne fait pas de mal : [Distrobox - Issue #995](https://github.com/89luca89/distrobox/issues/995). Oui, ce bug est connu depuis un moment et n'est toujours résolu proprement à ce jour...
 
 Malgré ça, j'ai tout de même pu installer mon environnement Kali, après beaucoup, beaucoup de mal.
