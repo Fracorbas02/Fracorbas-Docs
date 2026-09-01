@@ -1,8 +1,8 @@
 {
   "label": "Hacking",
-  "position": 24
+  "position": 24,
   "link": {
     "type": "generated-index",
-    "description": "Des Writeup de différents CTF que j'ai réalisé",
+    "description": "Des writeups de différents CTF que j'ai réalisés"
   }
 }
