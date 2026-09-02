@@ -27,7 +27,7 @@ Quand on dit que la Steam Deck tourne sous Arch Linux, c'est techniquement vrai,
 
 Le rootfs (`/`) est une partition BTRFS montée en read-only. Mais le véritable mécanisme qui rend SteamOS robuste, c'est son schéma de partitions A/B : deux partitions racine côte à côte, disons `nvme0n1p4` (active) et `nvme0n1p5` (inactive).
 
-À chaque mise à jour, SteamOS écrit la nouvelle image sur la partition **inactive**, puis bascule dessus au prochain reboot. C'est un update atomique : soit ça marche et tu dCɭarres sur la nouvelle version, soit ça casse et tu rebootes sur l'ancienne. Pas de système à mi-chemin entre deux versions, pas de paquet cassé à mi-chemin d'un `pacman -Syu`.
+À chaque mise à jour, SteamOS écrit la nouvelle image sur la partition **inactive**, puis bascule dessus au prochain reboot. C'est un update atomique : soit ça marche et tu démarres sur la nouvelle version, soit ça casse et tu rebootes sur l'ancienne. Pas de système à mi-chemin entre deux versions, pas de paquet cassé à mi-chemin d'un `pacman -Syu`.
 
 ```text
 NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
@@ -82,33 +82,54 @@ distrobox-enter kali
 
 Le premier `distrobox-enter kali` s'arrête net à l'étape `Installing basic packages... Error: An error occurred`. Pas très bavard, distrobox.
 
-Quand on lance en `--verbose`, on découvre le mécanisme : distrobox-init exécute un script à l'intérieur du conteneur au premier `enter`. Ce script lance `apt-get update` puis `apt-get install` d'un longue liste de paquets (sudo, curl, gnupg2, libvte-common, libgl1-mesa-glx, mesa-vulkan-drivers, etc.) pour intégrer le conteneur à l'hôte. Un seul paquet manquant et tout le lot échoue.
+Quand on lance en `--verbose`, on découvre le mécanisme : distrobox-init exécute un script à l'intérieur du conteneur au premier `enter`. Ce script lance `apt-get update` puis `apt-get install` d'une longue liste de paquets (sudo, curl, gnupg2, libvte-common, libgl1-mesa-glx, mesa-vulkan-drivers, etc.) pour intégrer le conteneur à l'hôte. Un seul paquet manquant et tout le lot échoue.
 
-El le coupable est là :
+Et le coupable est là :
 
 ```text
 E: Package 'libgl1-mesa-glx' has no installation candidate
 ```
 
-`libgl1-mesa-glx` était un paquet transitoire dans Debian/Ubuntu/Kali — un alias qui pointait vers la vraiHژۚ[ݚ0ꜝYHY\؋Ȓ[H0ꝰꈜٝ\تHH؛Hۛ[و
-]HXژ[ȝ\ݚ[ً]	՘ݛݝH̋̌
-ʊKٛ\X𪈜\ȘXٛX
-ȘXٛ[Y\،ȓXZ\țH؜ڜ\ݜۘ۞Z[ڝɘH\ȰꝰꈛZ\Ȱ舚۝\ș[ȘۛܰꜝY[ؙKȐə\݈HݙȜЪYЪ\ٛذꈙ[܈\Ț\ܝY\ȈΎMK̌ˈ̌L̈]̌LșH0ꜰ흈\ݜۘ۞әHЪ\٘]Hə\݈\ș[Ș؝\و8%[ȘٛX[ș^XȚ؛H\Yٝ\]Xۛ؝[ٜۛ\٘Z][Y[݈
-]̘\Ș\܎؊KȐə\݈ڙ[ȝ[Ȝ\]Y]Xܙ[݈H0ꜰ흋ȈȈHۛ][ۈȝ[ȜًZ[ڝZۚȜ]ZHܰꙈ[Ȝ\]Y]ؘݚXق\ݜۘ۞\ۙ]H\ܙ\ȝ[ȘK\ًZ[ڝZۚܘ]ZHə^XݝH
-ʘ]؛݊ʈ	𪝘\Hқܝ[[و؜ژȜXژYٜȋȓ	ڙ0ꙈȚ[ܝ[\ț\ȝܘZ\Ȝ\]Y]șHٛ\XٛY[݈
-XٛXXٞ[Y\،
-KZ\ȘܰꙜȝ[Ȝ\]Y]ٙXșؘݚXوۛ[pꈘXٛK[Y\؋Y۞ݜȜ]YH\ݜۘ۞Z[ڝHۚYHۛ[YH0ꚰ舚[ܝ[0ꋂ؜ڂٚ\ݜۘ۞XܙX]HK[؛YH؛HKZ[XYوؚٜ˚[˚؛[[ݞژ[K\ۛ[وȈK\ًZ[ڝZۚ܈	٘ڛȈٙXȚˋژ[Kٛݛؙۛژ[H؛K\ۛ[وXZ[Șۛݜژțۛ˙ܙYHۛ˙ܙYKYڜ۝؜وȏȋٝ˘\ܛݜؙ\˛\݈	Ɉ\Yٝ\]H	Ɉ\Yٝ[ܝ[^HXٛHXٛ[Y\،	ɈZٚ\ȋ\ݛ\ًёPҐSȉɈڛݙȈԘXژYَțXٛK[Y\؋Y۞ՙ\ܚ[ێȎNNΎWМؚ]Xݝ\َȘ[Y͗љ\؜ڜ[ێș[[^WȈȋݛ\ًёPҐS˘ۛݜۛ	ɈًYXȋKXݚ[ݛ\وݛ\ًٙXȉɈوZHݛ\ًٙXɂؘHًYX؈ܰꙈ[ȋٙXțZ[ڛX[]٘ȝ[Șژ[\ۛݜۛ؛YKȓHوZX	ڛܝ[KȔ]X[و\ݜۘ۞Z[ڝ[ؙHۛȘ\Yٝ[ܝ[ˋțXٛK[Y\؋Y۞ˋ؋\ۚ]H\]Y]ؘݚXوۛ[YH0ꚰ舚[ܝ[0ꈙ]\ܙH0舛Hݚ]KΎΚ[ٛȈәH۝\ؙ\˛\ݘٜ݈ۜذꈜݜȘ؛Kٛݛؙۛژ[X[Ȓ\݈٘]0흈]YHژ[Kًۜژ[X]ZH\݈[Ȝٙ\٘ݛ܋ȓHؚ\ۛș\݈^\]pꙈ[܈H٘ݚ[ۈݚ]؛ݙKȈΎ΂ȈȓH٘ۛوpꙙHț\țZ\ۚ\܈Ș]٘ȘٜݚYژ؝[ݘ[YB[وۚ\țH\]Y]ؘݚXو[ȜXً\ݜۘ۞Z[ڝ\ܙH	𪝘\Hқܝ[[و؜ژȜXژYٜȈ]ۛ[Y[ؙH0舝0꛰ꘚ\ٙ\ț\Ȍ͍Ȝ\]Y]șHH\ݙKȓXZ\ȝ[وۛۙH\ݚYH0ꘚݙHؘ^ќ܎̎΋˚؛[Z\ܛ܋ݙ[[˛YYXKژ[H؛K\ۛ[ًۘZ[Ș[Y͈[ݞ\ޜ؝YY؝[Ș[̍ԓۛۙXݚ[ۈؚ[Yș\ܛ܎̐LΔԓ۝][ٜΎؙ\ݚYژ؝Hٜڙވؚ[Yؘژ[Kۜ٘\݈[Ȝٙ\٘ݛ܈]ZHٛݛڙ\ȝ0꛰ꘚ\ٙ[Y[ݜȝٜ܈Yٰꜙ[ݜțZ\ۚ\܋ȓH\\݈][\݈ٛ]\ܙ[݋XZ\Ș؛[Z\ܛ velden.media` utilise HTTPS avec un certificat que le conteneur de base Kali ne valide pas — au moment du premier `apt-get install`, les `ca-certificates``ne sont pas encore installés.
+`libgl1-mesa-glx` était un paquet transitoire dans Debian/Ubuntu/Kali — un alias qui pointait vers la vraie bibliothèque Mesa. Il a été retiré de Kali rolling (et de Debian testing, et d'Ubuntu 23.10+), remplacé par `libgl1` + `libglx-mesa0`. Mais le script distrobox-init n'a pas été mis à jour en conséquence. C'est le bug référencé dans les issues #995, #1047, #1132 et #1053 du dépôt distrobox.
 
-QԠfix : forcer un miroir HTTP direct dans le pre-init hook (déjà fait dans la commande ci-dessus avec `kali.download/kali`), puis une fois dans le conteneur, désactiver la vérification SSL comme filet de récuritá :
+Le réseau n'est pas en cause — un `podman exec kali apt-get update` fonctionne parfaitement (`Hit:1`, pas `Err:`). C'est bien un paquet absent du dépôt.
+
+### La solution : un pre-init-hook qui crée un paquet factice
+
+Distrobox permet de passer un `--pre-init-hooks` qui s'exécute **avant** l'étape "Installing basic packages". L'idée : installer les vrais paquets de remplacement (`libgl1`, `libglx-mesa0`), puis créer un paquet .deb factice nommé `libgl1-mesa-glx` pour que distrobox-init le voie comme déjà installé.
+
+```bash
+distrobox-create --name kali --image docker.io/kalilinux/kali-rolling \
+  --pre-init-hooks 'echo "deb http://kali.download/kali kali-rolling main contrib non-free non-free-firmware" > /etc/apt/sources.list && apt-get update && apt-get install -y libgl1 libglx-mesa0 && mkdir -p /tmp/d/DEBIAN && printf "Package: libgl1-mesa-glx\nVersion: 99:99\nArchitecture: amd64\nDescription: dummy\n" > /tmp/d/DEBIAN/control && dpkg-deb --build /tmp/d /tmp/d.deb && dpkg -i /tmp/d.deb'
+```
+
+Le `dpkg-deb` crée un .deb minimal avec un champ `control` valide. Le `dpkg -i` l'installe. Quand distrobox-init lance son `apt-get install ... libgl1-mesa-glx ...`, apt voit le paquet factice comme déjà installé et passe à la suite.
+
+:::info  
+Le `sources.list` est forcé sur `kali.download/kali` en HTTP direct plutôt que `http.kali.org/kali` qui est un redirector. La raison est expliquée dans la section suivante.  
+:::
+
+### Le second piège : les miroirs HTTPS avec certificat invalide
+
+Une fois le paquet factice en place, distrobox-init passe l'étape "Installing basic packages" et commence à télécharger les 246 paquets de la liste. Mais une bonne partie échoue :
+
+```text
+Err:38 https://kalimirror.velden.media/kali kali-rolling/main amd64 linux-sysctl-defaults all 4.16
+  SSL connection failed: error:0A000086:SSL routines::certificate verify failed
+```
+
+`http.kali.org` est un redirector qui renvoie les téléchargements vers différents miroirs. La plupart utilisent HTTP et passent, mais `kalimirror.velden.media` utilise HTTPS avec un certificat que le conteneur de base Kali ne valide pas — au moment du premier `apt-get install`, les `ca-certificates` ne sont pas encore installés.
+
+Le fix : forcer un miroir HTTP direct dans le pre-init hook (déjà fait dans la commande ci-dessus avec `kali.download/kali`), puis une fois dans le conteneur, désactiver la vérification SSL comme filet de sécurité :
 
 ```bash
 echo 'deb http://ftp.free.fr/pub/kali kali-rolling main contrib non-free non-free-firmware' > /etc/apt/sources.list
 echo 'Acquire::https::Verify-Peer "false";' > /etc/apt/apt.conf.d/99-no-verify
-echo 'Acquire::https::VerifY-Host "false";' >> /etc/apt/apt.conf.d/99-no-verify
+echo 'Acquire::https::Verify-Host "false";' >> /etc/apt/apt.conf.d/99-no-verify
 apt update
 ```
 
-`ftp.free.fr` est un miroir direct HTTP — apt ne sera jamais redirigé vers HTTPS. Pour un conteneur de pentest, la sécurité TLS pendant l'init n'est pas un souci (ou plutδt c'est acceptable).
+`ftp.free.fr` est un miroir direct HTTP — apt ne sera jamais redirigé vers HTTPS. Pour un conteneur de pentest, la sécurité TLS pendant l'init n'est pas un souci (ou plutôt c'est acceptable).
 
 ## Finaliser l'installation — ou pourquoi `/tmp` refuse de coopérer
 
@@ -122,8 +143,8 @@ apt install -y kali-linux-default
 
 ```text
 fchownat() of /tmp failed: Operation not permitted
-Rchownat() of /tmp/.X11-unix failed: Operation not permitted
-dppg: error processing package systemd (-configure):
+fchownat() of /tmp/.X11-unix failed: Operation not permitted
+dpkg: error processing package systemd (--configure):
  old systemd package postinst maintainer script subprocess failed with exit status 73
 ```
 
@@ -131,7 +152,7 @@ Puis plus loin, même motif :
 
 ```text
 fchownat() of /dev/snd/seq failed: Operation not permitted
-Xchmod() of /dev/kvm failed: Operation not permitted
+fchmod() of /dev/kvm failed: Operation not permitted
 dpkg: error processing package udev (--configure):
 ```
 
@@ -139,7 +160,7 @@ dpkg: error processing package udev (--configure):
 
 Distrobox bind-mounte `/tmp` et `/dev` depuis l'hôte — ce ne sont pas des répertoires privés au conteneur. En rootless avec user namespace, le "root" du conteneur (UID 0 vu de l'intérieur) est en réalité l'utilisateur `deck` (UID 1000) sur l'hôte. Le postinst de systemd tente un `fchownat()` sur `/tmp` pour le remettre à `root:root`, mais `/tmp` appartient au vrai root de l'hôte (UID 0 réel), et l'UID mappé (1000) n'a pas le droit de changer son propriétaire. D'où EPERM (`Operation not permitted`).
 
-C'est le pattern systématique en rootless distrobox : dés qu'un postinst de paquet touche à `/tmp`, `/dev`, ou tout autre bind-mount depuis l'hôte, il échoue.
+C'est le pattern systématique en rootless distrobox : dès qu'un postinst de paquet touche à `/tmp`, `/dev`, ou tout autre bind-mount depuis l'hôte, il échoue.
 
 ### Le fix : no-op sur les postinst problématiques
 
@@ -154,7 +175,7 @@ echo '#!/bin/sh
 exit 0' > /var/lib/dpkg/info/systemd.postinst
 
 # Reconfigurer (passe sans erreur)
-dpkg --configure system
+dpkg --configure systemd
 
 # Restaurer l'original pour les futures mises à jour
 cp /var/lib/dpkg/info/systemd.postinst.bak /var/lib/dpkg/info/systemd.postinst
@@ -164,7 +185,7 @@ apt-get install -f
 apt-get install -y kali-linux-default
 ```
 
-Pour anticiper les paquets qui vont probablement échouer (systeme, udev, dbus, systemd-sysv, kmod), on peut prémŰpliquer le no-op en boucle :
+Pour anticiper les paquets qui vont probablement échouer (systemd, udev, dbus, systemd-sysv, kmod), on peut pré-appliquer le no-op en boucle :
 
 ```bash
 for pkg in udev systemd dbus systemd-sysv kmod; do
@@ -187,7 +208,7 @@ done
 ```
 
 :::info  
-Le postinst de systemd fait principalement : créer des symlinks de services, configurer les tmpfiles, et dérarrer des services. Dans un conteneur distrobox, systemd ne tourne pas comme PID 1 — c'est l'entrypoint distrobox qui est PID 1. Les actions du postinst sont donc costétiques ici. Le no-op est sans cons]équence fonctionnelle.  
+Le postinst de systemd fait principalement : créer des symlinks de services, configurer les tmpfiles, et démarrer des services. Dans un conteneur distrobox, systemd ne tourne pas comme PID 1 — c'est l'entrypoint distrobox qui est PID 1. Les actions du postinst sont donc cosmétiques ici. Le no-op est sans conséquence fonctionnelle.  
 :::
 
 ### Les prompts interactifs de debconf
