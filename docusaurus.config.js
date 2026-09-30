@@ -63,6 +63,8 @@ const config = {
         },
         blog: {
           showReadingTime: true,
+          showLastUpdateTime: true,
+          showLastUpdateAuthor: true,
           feedOptions: {
             type: ['rss', 'atom'],
             xslt: true,
