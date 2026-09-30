@@ -2,7 +2,7 @@
 slug: MesMesaventuresLinux
 title: "Mes mésaventures Linux de la semaine"
 authors: [bastien]
-tags: [informatique, open-source, Système, Linux]
+tags: [informatique, open-source, system, Linux]
 date: 2026-05-16
 last_update:
   date: 2026-05-16

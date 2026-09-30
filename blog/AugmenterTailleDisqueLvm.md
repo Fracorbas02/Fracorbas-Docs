@@ -1,0 +1,488 @@
+---
+slug: augmentation-taille-disque-linux-lvm
+title: "Augmentater la taille d'un disque Linux avec LVM"
+authors: [bastien]
+tags: [informatique, open-source, system, Linux]
+date: 2026-08-03
+last_update:
+  date: 2026-08-03
+  author: bastien
+---
+# Étendre un disque sous Linux avec LVM — mécanique interne
+
+> Document de référence rédigé à partir d'un cas réel : VM Ubuntu Server sur Proxmox,
+> disque SCSI `/dev/sda` en GPT, racine sur LVM, agrandissement de 62 → 82 GiB.
+
+---
+
+## 1. Le principe fondamental : cinq couches, cinq tailles
+
+Le point de blocage que rencontrent 90 % des administrateurs vient d'une idée fausse : croire qu'agrandir le disque côté hyperviseur « remonte » automatiquement jusqu'au système de fichiers.
+
+En réalité, **chaque couche stocke sa propre taille, à un endroit physique différent du disque**. Aucune ne l'interroge dynamiquement auprès de la couche du dessous.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. Disque virtuel (Proxmox / QEMU)                              │
+│    Taille définie par l'hyperviseur → vue par le noyau invité   │
+├─────────────────────────────────────────────────────────────────┤
+│ 2. Table de partitions GPT                                      │
+│    start/end en secteurs, écrits en LBA 1..33 et en fin de disque│
+├─────────────────────────────────────────────────────────────────┤
+│ 3. Physical Volume (PV) LVM                                     │
+│    Nombre d'extents, écrit dans les métadonnées en tête du PV   │
+├─────────────────────────────────────────────────────────────────┤
+│ 4. Volume Group (VG) → Logical Volume (LV)                      │
+│    Nombre de PE alloués au LV, dans les mêmes métadonnées       │
+├─────────────────────────────────────────────────────────────────┤
+│ 5. system de fichiers (ext4 / XFS)                             │
+│    Nombre de blocs, écrit dans le superbloc                     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Corollaire pratique :** une extension se propage *de bas en haut*, une couche à la fois, avec une commande dédiée par couche. Sauter une étape ne provoque pas d'erreur — la commande suivante annonce simplement qu'il n'y a rien à faire.
+
+### Tableau de correspondance
+
+| Couche | Où vit la taille | Commande de lecture | Commande d'extension |
+|---|---|---|---|
+| Disque | Config hyperviseur | `lsblk`, `/sys/block/sda/size` | Proxmox + rescan noyau |
+| Partition | Table GPT/MBR | `parted print`, `sfdisk -d` | `growpart` |
+| PV | Métadonnées LVM | `pvs`, `pvdisplay` | `pvresize` |
+| LV | Métadonnées LVM | `lvs`, `vgs` | `lvextend` |
+| FS | Superbloc | `df -h`, `dumpe2fs -h` | `resize2fs` / `xfs_growfs` |
+
+---
+
+## 2. Couche 1 — De l'hyperviseur au noyau
+
+### Ce qui se passe
+
+Après un `qm resize` (ou un clic dans l'interface Proxmox), le périphérique bloc exposé à la VM change de capacité. Le noyau invité doit être notifié pour mettre à jour son propre champ de capacité, visible dans `/sys/block/<dev>/size` (exprimé **en secteurs de 512 octets**, toujours, quelle que soit la taille de secteur physique).
+
+### Selon le type de contrôleur
+
+| Contrôleur | Nom du device | Détection |
+|---|---|---|
+| VirtIO SCSI / LSI / SATA émulé | `/dev/sda` | Nécessite souvent un rescan explicite |
+| VirtIO Block | `/dev/vda` | Automatique (interruption de changement de config) |
+
+Forcer un rescan sur un device SCSI :
+
+```bash
+echo 1 > /sys/class/block/sda/device/rescan
+# équivalent, via l'adresse H:C:T:L :
+echo 1 > /sys/class/scsi_device/0:0:0:0/device/rescan
+```
+
+Cette écriture dans sysfs déclenche une commande SCSI `READ CAPACITY` vers le périphérique. Le noyau met à jour sa capacité et journalise l'événement :
+
+```bash
+dmesg | tail -5
+# [ 1234.5 ] sd 0:0:0:0: [sda] 171966464 512-byte logical blocks: (88.0 GB/82.0 GiB)
+# [ 1234.5 ] sda: detected capacity change from 66571993088 to 88046829568
+```
+
+### Vérification
+
+```bash
+lsblk -o NAME,SIZE,TYPE            # unités binaires (G = GiB)
+lsblk -b -o NAME,SIZE              # octets bruts
+cat /sys/block/sda/size            # secteurs de 512 o
+```
+
+> **Piège des unités.** `lsblk` affiche en base 2 (`82G` = 82 GiB = 88,0 Go), Proxmox et les constructeurs en base 10. Un disque « 80 Go » n'affichera pas `80G` sous `lsblk`. Vérifier en octets (`lsblk -b`) lève toute ambiguïté.
+
+---
+
+## 3. Couche 2 — La table de partitions
+
+C'est **la couche où se concentrent tous les vrais pièges**.
+
+### Anatomie d'un disque GPT
+
+```
+LBA 0        │ Protective MBR (compatibilité, empêche les vieux outils d'écraser)
+LBA 1        │ En-tête GPT primaire (signature, taille disque, first/last usable LBA, CRC)
+LBA 2..33    │ Table des partitions (128 entrées × 128 o = 16 KiB = 32 secteurs)
+   ...       │ ← zone de données : les partitions
+LBA n-33..n-1│ Copie de la table des partitions
+LBA n        │ En-tête GPT de secours
+```
+
+Retenir : **33 secteurs sont réservés à la toute fin du disque**. C'est la source du problème principal.
+
+### Le piège n°1 : l'en-tête GPT de secours
+
+Quand l'hyperviseur agrandit le disque, l'en-tête de secours reste physiquement là où il était — donc **au milieu** du nouveau disque, plus à la fin. Pire, le champ `last usable LBA` de l'en-tête primaire pointe toujours sur l'ancienne limite.
+
+Conséquence : le noyau **refuse** d'étendre une partition au-delà de cette ancienne limite, avec un message du type :
+
+```
+The last usable GPT sector is 130023390, but 171966430 is requested.
+Failed to add partition: Invalid argument
+```
+
+C'est exactement ce que signale `parted` :
+
+```
+Warning: Not all of the space available to /dev/sda appears to be used,
+you can fix the GPT to use all of the space (an extra 41943040 blocks)
+or continue with the current setting?
+Fix/Ignore?
+```
+
+Corriger revient à réécrire l'en-tête primaire (nouveau `last usable LBA`) **et** recopier l'en-tête de secours à la vraie fin du disque. En manuel : `sgdisk -e /dev/sda`. Mais `growpart` le fait tout seul — inutile de répondre à ce prompt.
+
+### Le piège n°2 : la partition doit être la dernière
+
+Une partition ne peut être étendue que dans l'espace libre **immédiatement contigu à sa droite**. On ne déplace pas une partition sans copier les données.
+
+```bash
+parted /dev/sda unit s print free
+```
+
+Chercher une ligne `Free Space` située **après** la partition à étendre. S'il existe une partition (swap, données) après elle, il faut soit la supprimer et la recréer plus loin (à froid, live CD), soit renoncer et **ajouter un second disque** (voir §8).
+
+### Le piège n°3 : préserver type et UUID
+
+Une extension mal faite (`fdisk` : delete + recreate à la main) peut :
+
+- changer le secteur de départ → **perte totale des données** ;
+- perdre le type de partition → GRUB ou LVM ne retrouvent plus leur bien ;
+- changer le PARTUUID → un `/etc/fstab` ou un `root=PARTUUID=` en ligne de commande noyau cassé.
+
+### La bonne pratique : `growpart`
+
+Paquet `cloud-guest-utils` (Debian/Ubuntu) ou `cloud-utils-growpart` (RHEL/Rocky). C'est l'outil qu'utilise cloud-init au premier démarrage de toute image cloud — il est éprouvé à très grande échelle.
+
+```bash
+growpart --dry-run /dev/sda 3     # simulation, n'écrit rien
+growpart /dev/sda 3               # exécution
+```
+
+> **Syntaxe :** disque et numéro de partition sont **deux arguments séparés**.
+> `growpart /dev/sda3` échoue.
+
+Ce que `growpart` enchaîne en interne :
+
+1. lecture de la table via `sfdisk -d` ;
+2. calcul de la nouvelle taille, bornée par le début de la partition suivante ou par la fin réelle du disque **moins les 33 secteurs GPT** ;
+3. sauvegarde du PMBR et des en-têtes GPT dans `/tmp/growpart.XXXX/` ;
+4. réapplication du dump **sans la ligne `last-lba`** — ce qui force `sfdisk` à recalculer la dernière LBA utilisable et à réécrire les deux en-têtes ;
+5. notification au noyau via `partx --update`.
+
+Il refuse d'agir si le gain est inférieur à 10 Mio (option `--fudge`, défaut 20480 secteurs).
+
+### Lire un `--dry-run` : l'exemple réel
+
+```
+CHANGE: partition=3 start=2101248 old: size=127922143 end=130023391
+                                  new: size=169865183 end=171966431
+```
+
+Contrôles à faire soi-même :
+
+- **`start` inchangé** (`2101248` dans les deux dumps) → aucune donnée déplacée. C'est **le** point vital.
+- **`type` et `uuid` inchangés** → fstab, GRUB et LVM ne voient aucune différence.
+- **Fin cohérente avec les 33 secteurs réservés** :
+  `171966464 (taille disque) − 33 = 171966431` → le nouveau `end` tombe pile sur la limite. Le calcul GPT est correct.
+
+### Notifier le noyau
+
+Si `lsblk` montre encore l'ancienne taille après `growpart` :
+
+```bash
+partx -u /dev/sda3       # ioctl BLKPG, partition par partition — fonctionne à chaud
+partprobe /dev/sda       # relecture globale de la table
+```
+
+`partx -u` est préférable quand des partitions du disque sont montées : il redimensionne une partition précise sans exiger une relecture complète de la table, opération que le noyau peut refuser (`EBUSY`) si le disque est en cours d'utilisation.
+
+### Cas MBR
+
+`growpart` gère aussi le MBR (via `sfdisk`), sans la problématique d'en-tête de secours. Limites propres au MBR : 4 partitions primaires, et **2 Tio maximum** par partition.
+
+---
+
+## 4. Couche 3 — Le Physical Volume LVM
+
+### Pourquoi `pvs` affiche `PFree 0`
+
+**`pvs` n'interroge pas le périphérique.** Il lit les métadonnées LVM inscrites au début du PV, qui contiennent le nombre d'extents physiques. Tant que ces métadonnées n'ont pas été réécrites, LVM reste convaincu que le PV a sa taille d'origine — même si la partition sous-jacente a doublé.
+
+C'est un choix de conception cohérent : les métadonnées LVM sont la source de vérité, ce qui permet notamment de déplacer un PV d'un disque à l'autre sans rien perdre.
+
+### Structure du début d'un PV
+
+```
+octet 0        │ (souvent vide)
+secteur 1      │ Label LVM : signature « LABELONE » + UUID du PV
+offset 4096    │ Metadata Area (MDA) : description texte du VG, des LV, du mapping des PE
+offset 1 MiB   │ pe_start : premier extent de données (alignement par défaut)
+```
+
+L'alignement à 1 Mio (`pe_start = 2048` secteurs) sert à faire coïncider les extents avec les frontières d'effacement des SSD et les bandes RAID.
+
+À observer : les métadonnées sont **en tête** du PV. Étendre la partition par la fin ne les touche donc jamais. C'est ce qui rend l'opération sûre.
+
+```bash
+pvs -o pv_name,pv_size,pv_free,pv_pe_count,pv_pe_alloc_count
+pvdisplay /dev/sda3
+```
+
+### La commande
+
+```bash
+pvresize /dev/sda3
+```
+
+`pvresize` interroge la taille réelle du périphérique auprès du noyau (`BLKGETSIZE64`), recalcule le nombre d'extents et **réécrit les métadonnées LVM**. Opération faisable **à chaud**, avec des LV actifs et montés — c'est explicitement prévu par la documentation LVM.
+
+Sans argument de taille, il aligne le PV sur la taille du périphérique. L'option `--setphysicalvolumesize` force une valeur, uniquement utile pour réduire (LVM refuse de toute façon de rétrécir un PV si des extents sont alloués au-delà de la nouvelle limite).
+
+### Filet de sécurité intégré
+
+Toute commande LVM modifiant les métadonnées en archive automatiquement la version précédente :
+
+```
+/etc/lvm/archive/   ← historique horodaté (avant chaque modification)
+/etc/lvm/backup/    ← état courant
+```
+
+En cas de catastrophe : `vgcfgrestore -l ubuntu-vg` pour lister, puis `vgcfgrestore -f <fichier> ubuntu-vg`.
+
+---
+
+## 5. Couche 4 — Volume Group et Logical Volume
+
+### Le modèle des extents
+
+LVM découpe chaque PV en **Physical Extents** (PE) de taille fixe, 4 Mio par défaut. Un LV est simplement une liste de PE, potentiellement répartis sur plusieurs PV. Cette indirection est ce qui autorise l'extension à chaud, le déplacement en ligne (`pvmove`) et les snapshots.
+
+```bash
+vgs -o vg_name,vg_size,vg_free,vg_extent_size,vg_extent_count,vg_free_count
+lvs -o +seg_pe_ranges          # à quels PE physiques correspond chaque LV
+```
+
+### Étendre
+
+```bash
+lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv     # tout l'espace libre du VG
+lvextend -L +10G     /dev/ubuntu-vg/ubuntu-lv     # 10 Gio de plus
+lvextend -L 50G      /dev/ubuntu-vg/ubuntu-lv     # jusqu'à 50 Gio au total
+```
+
+Distinction à retenir :
+
+- `-l` : en **extents** ou en pourcentage (`+100%FREE`, `+50%FREE`, `90%VG`)
+- `-L` : en **octets** (suffixes `M`, `G`, `T`)
+- `+` : ajoute à la taille actuelle. Sans `+`, la valeur est **absolue** — la confusion entre `-L 10G` et `-L +10G` est une erreur classique.
+
+> **Conseil d'administrateur :** ne pas systématiquement consommer `+100%FREE`. Garder de la marge dans le VG permet de créer un snapshot avant une opération risquée, ou d'étendre un autre LV en urgence. C'est la raison d'être de LVM.
+
+### Étendre le système de fichiers dans la foulée
+
+```bash
+lvextend -l +100%FREE -r /dev/ubuntu-vg/ubuntu-lv
+```
+
+`-r` / `--resizefs` délègue à `fsadm`, qui détecte le type de FS et appelle l'outil adapté. Pratique, mais faire les deux étapes séparément permet de mieux comprendre — et de garder la main en cas de problème.
+
+---
+
+## 6. Couche 5 — Le système de fichiers
+
+### ext4
+
+```bash
+resize2fs /dev/ubuntu-vg/ubuntu-lv        # jusqu'à la taille du device
+resize2fs /dev/ubuntu-vg/ubuntu-lv 40G    # taille cible explicite
+```
+
+- **Extension à chaud** : supportée nativement, système monté et en production. Le noyau gère l'*online resize* pour ext3/ext4 depuis longtemps.
+- **Réduction** : impose un démontage préalable **et** un `e2fsck -f` obligatoire. Impossible sur `/` sans live CD.
+- Le mécanisme repose sur la fonctionnalité `resize_inode` (activée par défaut), qui préalloue des blocs de descripteurs de groupes pour permettre la croissance.
+
+```bash
+dumpe2fs -h /dev/ubuntu-vg/ubuntu-lv | grep -E 'Block count|Block size|features'
+```
+
+### XFS
+
+```bash
+xfs_growfs /                              # ATTENTION : point de montage, pas device
+```
+
+Deux différences majeures avec ext4 :
+
+1. `xfs_growfs` prend le **point de montage** en argument. Lui passer un device échoue.
+2. XFS ne sait **pas** rétrécir. Jamais, aucune option. Seule issue : sauvegarder, recréer, restaurer.
+
+### Vérification finale
+
+```bash
+df -h /
+```
+
+`df` lit le superbloc via `statfs()`. Une taille inchangée ici après un `resize2fs` réussi signifie généralement qu'on a redimensionné le mauvais device.
+
+---
+
+## 7. Procédure complète de référence
+
+Cas type : partition LVM en dernière position sur GPT, racine ext4.
+
+```bash
+# ─── 0. Diagnostic ────────────────────────────────────────────────
+lsblk
+pvs ; vgs ; lvs
+findmnt -no FSTYPE /
+parted /dev/sda unit s print free      # espace libre APRÈS la partition cible ?
+
+# ─── 1. Le noyau voit-il la nouvelle taille ? ─────────────────────
+lsblk -b -o NAME,SIZE
+# sinon, pour un device SCSI :
+echo 1 > /sys/class/block/sda/device/rescan
+
+# ─── 2. Sauvegardes ───────────────────────────────────────────────
+sfdisk -d /dev/sda > /root/sda-partition-table.backup
+# + snapshot Proxmox
+
+# ─── 3. Partition ─────────────────────────────────────────────────
+growpart --dry-run /dev/sda 3          # VÉRIFIER : start inchangé
+growpart /dev/sda 3
+lsblk /dev/sda                         # sda3 doit avoir grandi
+partx -u /dev/sda3                     # seulement si lsblk n'a pas bougé
+
+# ─── 4. Physical Volume ───────────────────────────────────────────
+pvresize /dev/sda3
+vgs                                    # VFree doit refléter le gain
+
+# ─── 5. Logical Volume + système de fichiers ──────────────────────
+lvextend -l +100%FREE -r /dev/ubuntu-vg/ubuntu-lv
+
+# ─── 6. Contrôle ──────────────────────────────────────────────────
+df -h /
+```
+
+Aucun redémarrage n'est nécessaire à aucune étape.
+
+---
+
+## 8. Cas particuliers
+
+### Le PV occupe le disque entier (pas de partition)
+
+Si `pvs` affiche `/dev/sdb` et non `/dev/sdb1`, il n'y a pas de table de partitions. On saute toute la couche 2 :
+
+```bash
+pvresize /dev/sdb
+lvextend -l +100%FREE -r /dev/vg/lv
+```
+
+### Une partition se trouve après la partition LVM
+
+L'extension en place est impossible. Trois options, par ordre de préférence :
+
+1. **Ajouter un second disque virtuel** (voir ci-dessous) — sans interruption, sans risque ;
+2. supprimer/recréer la partition gênante à froid (live CD) ;
+3. migrer les données vers un nouveau disque.
+
+### Ajouter un disque plutôt qu'étendre — souvent la meilleure option en VM
+
+C'est la façon la plus propre et la plus sûre d'agrandir un VG. Aucune table de partitions à réécrire.
+
+```bash
+# après ajout du disque dans Proxmox
+echo "- - -" > /sys/class/scsi_host/host0/scan     # détection à chaud
+lsblk
+
+pvcreate /dev/sdb                    # PV sur le disque brut, sans partition
+vgextend ubuntu-vg /dev/sdb          # ajout au VG existant
+lvextend -l +100%FREE -r /dev/ubuntu-vg/ubuntu-lv
+```
+
+Contrepartie : le LV s'étale sur deux disques virtuels, ce qui complique légèrement la maintenance ultérieure (et rend obligatoire un `pvmove` pour retirer un disque).
+
+### Thin provisioning
+
+Si `lvs` affiche des colonnes `Pool`, `Data%` et `Meta%` renseignées, le LV est *thin*. L'extension du pool suit la même logique, mais il faut surveiller **aussi** le volume de métadonnées :
+
+```bash
+lvextend -L +20G ubuntu-vg/thinpool                    # données
+lvextend --poolmetadatasize +1G ubuntu-vg/thinpool     # métadonnées
+```
+
+Un pool de métadonnées saturé rend le pool entier illisible, c'est une panne bien plus grave qu'un simple disque plein.
+
+---
+
+## 9. Diagnostic rapide
+
+| Symptôme | Couche en cause | Commande |
+|---|---|---|
+| `lsblk` affiche l'ancienne taille du **disque** | Noyau | `echo 1 > /sys/class/block/sda/device/rescan` |
+| `parted` affiche `Fix/Ignore?` sur l'espace disponible | En-tête GPT de secours | `growpart` (ou `sgdisk -e`) |
+| `growpart` : « last usable GPT sector is … » | En-tête GPT de secours | `sgdisk -e /dev/sda` puis relancer |
+| Partition inchangée après `growpart` réussi | Noyau non notifié | `partx -u /dev/sda3` |
+| `pvs` : `PFree 0` alors que la partition a grandi | Métadonnées LVM | `pvresize /dev/sda3` |
+| `vgs` : `VFree 0` alors que `PFree > 0` | Incohérence rare | `vgck`, `pvs -v` |
+| `lvextend` : « Insufficient free space » | VG plein | `vgs` — remonter d'un cran |
+| `df` inchangé après `lvextend` | Superbloc FS | `resize2fs` / `xfs_growfs` |
+| `xfs_growfs` : « not a mounted XFS filesystem » | Mauvais argument | passer le **point de montage** |
+
+---
+
+## 10. Sécurité et bonnes pratiques
+
+**À faire systématiquement**
+
+- Snapshot ou sauvegarde de la VM avant de toucher à la table de partitions.
+- `sfdisk -d /dev/sda > backup.txt` — restauration possible par `sfdisk /dev/sda < backup.txt`.
+- Toujours passer par `growpart --dry-run` et **vérifier que `start` est inchangé**.
+- Travailler sur une console série ou l'écran Proxmox plutôt qu'en SSH : une coupure réseau au mauvais moment n'interrompt pas la commande, mais prive de la sortie.
+
+**Le vrai risque, honnêtement évalué**
+
+L'unique scénario dangereux est une coupure brutale (crash de l'hôte, OOM) **pendant** la réécriture de la table de partitions. Les données resteraient intactes, mais la table serait incohérente et le disque non amorçable jusqu'à reconstruction. La fenêtre concernée est de quelques millisecondes, et l'opération est celle que cloud-init exécute au premier boot de millions d'instances cloud par jour. Les étapes 4 à 6 (`pvresize`, `lvextend`, `resize2fs`) sont, elles, sans risque réel : elles sont conçues pour tourner à chaud en production.
+
+**Rappel structurel**
+
+- Proxmox ne sait **qu'agrandir** un disque, jamais le réduire.
+- ext4 peut rétrécir (à froid), XFS jamais.
+- Réduire un LV avant son système de fichiers détruit les données. Dans le doute : ne pas réduire.
+
+---
+
+## Annexe — Commandes de référence
+
+```bash
+# Inspection
+lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT,TYPE
+lsblk -b                                    # en octets
+blkid                                       # UUID et types
+parted /dev/sda unit s print free
+sfdisk -d /dev/sda                          # dump exploitable de la table
+sgdisk -p /dev/sda                          # vue GPT détaillée
+cat /proc/partitions
+
+# LVM
+pvs -o+pv_used,pv_pe_count                  # vue PV enrichie
+vgs -o+vg_extent_size
+lvs -o+devices,seg_pe_ranges
+pvdisplay -m /dev/sda3                      # mapping des extents
+vgdisplay ubuntu-vg
+lvmdiskscan
+
+# systems de fichiers
+dumpe2fs -h /dev/mapper/ubuntu--vg-ubuntu--lv
+xfs_info /
+tune2fs -l /dev/mapper/ubuntu--vg-ubuntu--lv
+
+# Récupération LVM
+vgcfgrestore -l ubuntu-vg                   # lister les archives
+vgcfgrestore -f /etc/lvm/archive/xxx.vg ubuntu-vg
+```
+
+**Pages de manuel à consulter :** `lvm(8)`, `pvresize(8)`, `lvextend(8)`, `growpart(1)`, `sfdisk(8)`, `sgdisk(8)`, `resize2fs(8)`, `xfs_growfs(8)`, `partx(8)`.

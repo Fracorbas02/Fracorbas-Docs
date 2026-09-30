@@ -2,7 +2,7 @@
 slug: Sauvegarde-securise-passbolt-docker
 title: "Sauvegarder sa base passbolt de manière sécurisée sous docker"
 authors: [bastien]
-tags: [informatique, open-source, Système, Linux]
+tags: [informatique, open-source, system, Linux]
 date: 2026-05-12
 last_update:
   date: 2026-05-12

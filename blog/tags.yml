@@ -10,10 +10,6 @@ Windows:
   label: Windows
   permalink: /windows
   description: Articles concernant Windows, son utilisation, ses failles ou des outils pratiques
-System:
-  label: Système
-  permalink: /system
-  description: Articles concernant le ssystèmes d'exploitation, leur utilisation, leur fonctionnement et la manière de les administrer.
 Linux:
   label: Linux
   permalink: /Linux
@@ -29,8 +25,8 @@ cybersecurite:
   description: tous les acticles qui parlent de la sécurité informatique
 system:
   label: système
-  permalink: system
-  description: tout article parlant de proche ou de loin des système d'exploitation, de leur administration, de leur utilisation ou d'informationg générale à leur sujet.
+  permalink: /system
+  description: tout article parlant de proche ou de loin des systèmes d'exploitation, de leur administration, de leur utilisation ou d'informations générales à leur sujet.
 open-source:
   label: open-source
   permalink: /open-source
@@ -52,3 +48,48 @@ tesla:
   label: tesla
   permalink: /tesla
   description: en rapport avec des éléments de tesla. Mes retours d'expérience ou des informations relatives à cette marque
+
+securite:
+  label: sécurité
+  permalink: /securite
+  description: tous les articles qui parlent de sécurité informatique et de bonnes pratiques pour se protéger
+
+ci-cd:
+  label: CI/CD
+  permalink: /ci-cd
+  description: tous les articles sur l'intégration et le déploiement continu, les pipelines et l'automatisation des builds
+
+github-actions:
+  label: GitHub Actions
+  permalink: /github-actions
+  description: tous les articles sur GitHub Actions, ses workflows et l'automatisation sur GitHub
+
+devops:
+  label: devops
+  permalink: /devops
+  description: tous les articles sur le devops, l'automatisation et l'infrastructure as code
+
+rsync:
+  label: rsync
+  permalink: /rsync
+  description: tous les articles sur rsync, la synchronisation et la sauvegarde de fichiers
+
+docusaurus:
+  label: docusaurus
+  permalink: /docusaurus
+  description: tous les articles sur Docusaurus, ce site et la génération de sites statiques
+
+o2switch:
+  label: o2switch
+  permalink: /o2switch
+  description: tous les articles en rapport avec l'hébergeur o2switch et l'hébergement web
+
+GPU:
+  label: GPU
+  permalink: /gpu
+  description: tous les articles sur les cartes graphiques, leur installation, leurs pilotes et leurs performances
+
+eGPU:
+  label: eGPU
+  permalink: /egpu
+  description: tous les articles sur les boîtiers de cartes graphiques externes (eGPU) et leur utilisation

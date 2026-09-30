@@ -2,7 +2,7 @@
 slug: monHomeLad
 title: "mon Home-Lab"
 authors: [bastien]
-tags: [informatique, open-source, Système, Linux, lab]
+tags: [informatique, open-source, system, Linux, lab]
 date: 2026-05-29
 last_update:
   date: 2026-05-29

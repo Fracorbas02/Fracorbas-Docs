@@ -2,7 +2,7 @@
 slug: ollama-gpu-amd-arch-linux
 title: "Faire tourner Ollama sur GPU AMD sous Arch Linux"
 authors: [bastien]
-tags: [informatique, open-source, Système, Linux, IA]
+tags: [informatique, open-source, system, Linux, IA]
 date: 2026-05-16
 last_update:
   date: 2026-05-16

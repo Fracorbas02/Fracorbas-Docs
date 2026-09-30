@@ -2,7 +2,7 @@
 slug: homelab-installation-free-ipa
 title: "Installation de FreeIPA dans mon home-lab"
 authors: [bastien]
-tags: [informatique, open-source, Système, Linux, lab]
+tags: [informatique, open-source, system, Linux, lab]
 date: 2026-05-30
 last_update:
   date: 2026-05-30

@@ -2,7 +2,7 @@
 slug: maitriser-grep-recherche-fichiers
 title: "Rechercher dans des fichiers : maîtriser grep pour des recherches ciblées"
 authors: [bastien]
-tags: [Linux, tools, System]
+tags: [Linux, tools, system]
 date: 2026-08-31
 last_update:
   date: 2026-08-31

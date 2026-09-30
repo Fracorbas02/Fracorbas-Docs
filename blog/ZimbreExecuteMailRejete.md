@@ -2,7 +2,7 @@
 slug: CVE-2026-73570-Zimbra-injection-commande  
 title: "CVE-2026-73570 : quand Zimbra exécute vos mails rejetés"  
 authors: [bastien]  
-tags: [securite, informatique, Système]  
+tags: [securite, informatique, system]  
 date: 2026-08-29  
 last_update:  
   date: 2026-08-29  

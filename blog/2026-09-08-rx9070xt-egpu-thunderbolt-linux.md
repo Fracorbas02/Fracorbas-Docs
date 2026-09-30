@@ -2,7 +2,7 @@
 slug: rx9070xt-egpu-thunderbolt-linux
 title: "RX 9070 XT eGPU sur Thunderbolt 4 : ou comment AMD m'a fait perdre trois soirées"
 authors: [bastien]
-tags: [informatique, open-source, Système, Linux, GPU, eGPU]
+tags: [informatique, open-source, system, Linux, GPU, eGPU]
 date: 2026-09-08
 last_update:
   date: 2026-09-08
