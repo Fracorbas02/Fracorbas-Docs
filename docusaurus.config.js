@@ -51,6 +51,8 @@ const config = {
 
   themes: ['@docusaurus/theme-mermaid'],
 
+  scripts: [{src: '/js/reading-mode.js', defer: true, async: true}],
+
   presets: [
     [
       'classic',

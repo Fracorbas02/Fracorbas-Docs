@@ -108,3 +108,92 @@ h1, h2, h3, h4, h5, h6 {
 article a {
   text-underline-offset: 3px;
 }
+
+/* ─── Mode lecture plein écran ───────────────────────────────── */
+/* Bouton injecté par static/js/reading-mode.js dans document.body,
+   positionné en JS au coin supérieur droit de la zone de lecture */
+.reading-mode-toggle {
+  position: fixed;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  line-height: 0;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+  background-color: var(--ifm-background-surface-color);
+  color: var(--ifm-color-emphasis-600);
+  cursor: pointer;
+  box-shadow: var(--ifm-global-shadow-lw);
+}
+
+.reading-mode-toggle:hover {
+  color: var(--ifm-color-primary);
+  border-color: var(--ifm-color-primary);
+}
+
+.reading-mode-toggle svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.reading-mode-toggle .icon-exit {
+  display: none;
+}
+
+html[data-reading-mode='on'] .reading-mode-toggle .icon-enter {
+  display: none;
+}
+
+html[data-reading-mode='on'] .reading-mode-toggle .icon-exit {
+  display: block;
+}
+
+/* Mode actif : navbar, sidebar d'articles et footer masqués,
+   le contenu prend toute la largeur */
+html[data-reading-mode='on'] .navbar,
+html[data-reading-mode='on'] .footer,
+html[data-reading-mode='on'] .row > aside {
+  display: none;
+}
+
+html[data-reading-mode='on'] .row > main {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+/* Sommaire : la zone (bord gauche = bord droit du contenu, positionné
+   en JS ; bord droit = bord de l'écran) reste invisible tant qu'elle
+   n'est pas survolée. Le survol révèle le sommaire dans cette même
+   zone, sans jamais toucher la partie lisible. */
+html[data-reading-mode='on'] .row > div.col--2 {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 15;
+  height: 100vh;
+  margin: 0;
+  padding: 1.5rem 1.25rem;
+  overflow-y: auto;
+  background: transparent;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+html[data-reading-mode='on'] .row > div.col--2 > * {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease;
+}
+
+html[data-reading-mode='on'] .row > div.col--2:hover {
+  background-color: var(--ifm-background-surface-color);
+  box-shadow: -0.5rem 0 1.5rem rgba(0, 0, 0, 0.15);
+}
+
+html[data-reading-mode='on'] .row > div.col--2:hover > * {
+  opacity: 1;
+  visibility: visible;
+}
