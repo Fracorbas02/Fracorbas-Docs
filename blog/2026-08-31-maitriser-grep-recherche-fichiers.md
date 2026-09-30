@@ -12,9 +12,7 @@ last_update:
 On a tous déjà fait ça : on cherche une ligne précise dans un `running-config` de 4000 lignes, on balance un `grep mot` et on se retrouve avec 200 correspondances dont la moitié dans des commentaires. `grep` est l'une des commandes les plus utilisées sous Linux, et c'est aussi l'une des plus mal utilisées. Le but de cet article n'est pas de refaire le `man grep`, mais de montrer comment l'utiliser pour des recherches **vraiment ciblées** : filtrer le bon fichier, le bon moteur d'expressions rationnelles, le bon niveau de contexte, et surtout savoir quand arrêter de marteler `grep` pour passer à un outil plus adapté.
 
 <!-- truncate -->
-:::info
-CI FONCTIONNELLE
-:::
+
 
 Je pars du principe que vous êtes à l'aise en ligne de commande. Les exemples tournent sous GNU grep (donc Arch, Debian, RHEL — tout ce qui n'est pas BSD/macOS par défaut) et j'utilise des cas concrets d'admin réseau, parce que c'est là que le besoin de recherche ciblée se fait le plus sentir.
 
