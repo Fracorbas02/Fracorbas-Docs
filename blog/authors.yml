@@ -26,7 +26,7 @@ bastien:
   name: Bastien Bonora
   title: jeune padawan de l'informatique
   url: https://bastienbonora.fr
-  image_url: https://docs.bastienbonora.fr/img/BastienBonora.jpeg
+  image_url: /img/BastienBonora.jpeg
   page:
     permalink: '/Bastien'
   socials:
