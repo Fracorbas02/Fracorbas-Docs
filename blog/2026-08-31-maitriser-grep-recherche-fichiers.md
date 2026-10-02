@@ -170,7 +170,7 @@ Quelques recettes que j'utilise réellement sur du Arista EOS / Cisco, au-delà 
 # Combien d'interfaces ont une MTU jumbo (9000) dans un dump de conf ?
 grep -c 'mtu 9000' running-config.cfg
 
-# Les port-channels actifs en LACP, uniquement les noms, trkɳ uniques
+# Les port-channels actifs en LACP, uniquement les noms, trkɳ uniques
 grep -oE 'interface (Po|Port-Channel)[0-9]+' running-config.cfg | sort -u
 
 # Les events BGP de changement de voisinage sur les dernières 24h
