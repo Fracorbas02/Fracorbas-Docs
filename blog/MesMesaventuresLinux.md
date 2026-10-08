@@ -23,7 +23,7 @@ Tout a commencé lorsque j'ai vu l'erreur s'afficher à mon écran. Ce magnifiqu
 Donc, comme tout utilisateur Linux, je me dis "Ça doit être une mise à jour" -> **BOOOM** - une mise à jour sauvage de 35Go apparaît (ça devait faire une bail que je n'avais pas mis à jour mon poste).
 
 Et quelle fut ma surprise de découvrir au démarrage de mon poste que, je n'ai plus de bluetooth 🙂.
-Vous pourrez comprendre assez vite pourquoi j'ai voulu créer une nouvelle section dans ma documentation ici : [Bastodoc - Debug](../docs/Debug/panneBluetoothmt7922). J'explique ici tout ce que j'ai appris, mais aussi tout le cheminement que j'ai parcouru pour finalement me dire "Bon... ça a vraiment l'air d'être un bug moyennement sympa".
+Vous pourrez comprendre assez vite pourquoi j'ai voulu créer une nouvelle section dans ma documentation ici : [Bastodoc - Debug](/docs/Debug/panneBluetoothmt7922). J'explique ici tout ce que j'ai appris, mais aussi tout le cheminement que j'ai parcouru pour finalement me dire "Bon... ça a vraiment l'air d'être un bug moyennement sympa".
 
 Donc pour le moment, je n'ai plus de bluetooth, heureusement que j'ai ma super manette Steam qui utilise le PUC pour connecter en sans fil la manette (RIP ma pauvre manette Xbox que je n'utilisais qu'en bluetooth).
 

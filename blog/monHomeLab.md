@@ -45,7 +45,7 @@ graph TD
     Internal --> Monitoring[Stack SIEM + SNMP<br>10.0.20.30]
     Bridge --> |vlan 30| TestVM[TestVM<br>Linux]
 ```    
-Comme j'ai pu l'expliquer dans un article précédent : [Les réseaux proxmox](./Les-Reseaux-Proxmox), je vais pouvoir mettre tout ça en pratique, et notamment mettre des interfaces vlan dans mon OpnSense.
+Comme j'ai pu l'expliquer dans un article précédent : [Les réseaux proxmox](./2026-04-26-Les-Reseaux-Proxmox/index.md), je vais pouvoir mettre tout ça en pratique, et notamment mettre des interfaces vlan dans mon OpnSense.
 
 Donc voilà l'objectif, je vais petit à petit faire ça dans des articles à venir. Quelques mots tout de même sur tout ça.
 

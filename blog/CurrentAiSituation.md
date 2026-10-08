@@ -13,7 +13,7 @@ Malgré des progrès exceptionnels, il devient aujourd'hui compliqué d'avoir un
 
 <!-- truncate -->
 
-Pour le petit point historique, je vous invite à voir mon introduction ici : [Mistral, l'IA française souveraine](./Mistral-pourquoi-souverain).
+Pour le petit point historique, je vous invite à voir mon introduction ici : [Mistral, l'IA française souveraine](./MistralLiaSouveraine.md).
 
 ## Introduction
 

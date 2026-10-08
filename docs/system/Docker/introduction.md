@@ -155,9 +155,9 @@ Docker n'est pas une solution universelle. Quelques points méritent attention :
 
 La suite de cette documentation aborde, dans l'ordre :
 
-- [L'installation de Docker](./installation) sur Arch Linux et Debian / Ubuntu.
-- [Les commandes fondamentales](./commandesFondamentales) et le cycle de vie d'un conteneur.
-- [La construction d'images avec `Dockerfile`](./dockerfile) : sémantique des instructions, cache de couches, builds multi-stages.
-- [L'orchestration multi-conteneurs avec Docker Compose](./docker-compose).
-- [Les réseaux et volumes Docker](./network-volume) en profondeur.
-- [Un article bonus de sujets avancés](./bonus) : PID 1 et signaux, anatomie OCI, builds multi-architectures, debugging via namespaces, rootless et hardening.
+- [L'installation de Docker](./installation.md) sur Arch Linux et Debian / Ubuntu.
+- [Les commandes fondamentales](./commandesFondamentales.md) et le cycle de vie d'un conteneur.
+- [La construction d'images avec `Dockerfile`](./dockerfile.md) : sémantique des instructions, cache de couches, builds multi-stages.
+- [L'orchestration multi-conteneurs avec Docker Compose](./docker-compose.md).
+- [Les réseaux et volumes Docker](./network-volume.md) en profondeur.
+- [Un article bonus de sujets avancés](./bonus.md) : PID 1 et signaux, anatomie OCI, builds multi-architectures, debugging via namespaces, rootless et hardening.

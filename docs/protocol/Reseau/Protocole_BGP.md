@@ -8,7 +8,7 @@ sidebar_label: Protocole BGP
 # Introduction à la structure d'internet
 Avant de rentrer dans le vif du sujet, il faut comprendre quelques éléments important. Déjà, BGP est un protocole purement opérateur, leur configuration sera principalement politique, c'est à dire que les liens mis en place dépendent des contrats signés entre des entreprises.
 
-Comme nous l'avons vu dans le [Protocole MPLS](./Protocole_MPLS), les opérateurs d'internet font en sorte que dans leurs réseaux, MPLS soit utilisé afin que le temps pris à parcourir une table de réseau IP soit optimisé le plus possible.
+Comme nous l'avons vu dans le [Protocole MPLS](./Protocole_MPLS.md), les opérateurs d'internet font en sorte que dans leurs réseaux, MPLS soit utilisé afin que le temps pris à parcourir une table de réseau IP soit optimisé le plus possible.
 
 ## La problématique du routage internet
 Mais avant tout, on a un problème actuellement avec "internet". La question [c'est quoi internet ?](https://docs.bastienbonora.fr/blog/C-est-quoi-internet) prend tout son sens ici. Ne vous êtes vous jamais posé la question "par où passent mes données lorsque je vais sur internet ?".
@@ -144,7 +144,7 @@ Cela montre plusieurs choses :
 * Premièrement, on possède un contrôle total sur nos réseaux. Cela ne change pas
 * Le trafic sortant / entrant dans notre AS n'est plus forcément sous notre contrôle. Il peut être dépendant des choix des AS alentours
 
-Et donc, il faut que chaque opérateur ait le contrôle sur son infrstructure pour router correctement les paquets en entrée et sortie de son AS. A lui de mettre en place des protocoles comme [MPLS](./Protocole_MPLS) pour commuter en interne les paquets.
+Et donc, il faut que chaque opérateur ait le contrôle sur son infrstructure pour router correctement les paquets en entrée et sortie de son AS. A lui de mettre en place des protocoles comme [MPLS](./Protocole_MPLS.md) pour commuter en interne les paquets.
 
 # Principes du protocole BGP
 

@@ -73,7 +73,7 @@ graph TD
     style OPNsense fill:#fff0f0,stroke:#d63333
 ```
 
-Comme je le mentionne dans [Les réseaux proxmox](./Les-Reseaux-Proxmox), les bridges Linux sont littéralement des switchs. Une fois qu'on leur donne le paramètre `vlan aware`, ils se comporte alors comme un switch managé.
+Comme je le mentionne dans [Les réseaux proxmox](./2026-04-26-Les-Reseaux-Proxmox/index.md), les bridges Linux sont littéralement des switchs. Une fois qu'on leur donne le paramètre `vlan aware`, ils se comporte alors comme un switch managé.
 Donc chaque serveur pourra être dans son vlan, directement relié au pare-feu qui sera leur seule porte de sortie.
 
 ### Installation

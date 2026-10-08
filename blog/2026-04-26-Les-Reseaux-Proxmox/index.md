@@ -35,7 +35,7 @@ Peu importe la solution choisie, la configuration réseau sera toujours incontou
 
 ## Pourquoi le réseau est-il si important ?
 
-Quand on travaille avec des infrastructures virtualisées, il est essentiel de garder en tête le [modèle OSI](../docs/protocol/Le-modele-OSI). Le réseau intervient à pratiquement toutes ses couches : transport des trames (couche 2), adressage IP (couche 3), gestion des flux (couche 4), jusqu'aux couches applicatives.
+Quand on travaille avec des infrastructures virtualisées, il est essentiel de garder en tête le [modèle OSI](/docs/protocol/Le-modele-OSI). Le réseau intervient à pratiquement toutes ses couches : transport des trames (couche 2), adressage IP (couche 3), gestion des flux (couche 4), jusqu'aux couches applicatives.
 
 Une infrastructure bien conçue commence toujours par une configuration réseau solide — et dans le cas de Proxmox, cela commence dès la configuration de l'hyperviseur lui-même, avant même de parler de ce à quoi le serveur est connecté physiquement.
 
