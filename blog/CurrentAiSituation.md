@@ -17,7 +17,7 @@ Pour le petit point historique, je vous invite à voir mon introduction ici : [M
 
 ## Introduction
 
-J'avoue que le titre est clairement aguicheur, mais il traite une vraie question de fond qui devient de plus en plus omniprésente. Aujourd'hui, nous sommes dans un contexte de plus en plus tendu, que ce soit technologiquement, économiquement ou politiquement. Toutes les sphères les plus importantes de la société humaine sont chaque jour un peu plus mises à rude épreuve. Et dans tout ce beau monde, on retrouve l'IA. Une technologie démocratisée dans les années 2020 (on dirait presque pourtant que l'on a toujours connu ChatGPT) et qui connaît aujourd'hui un essor largement qualifiable "d'exponentiel".
+J'avoue que le titre est clairement aguicheur, mais il traite une vraie question de fond qui devient omniprésente. Aujourd'hui, nous sommes dans un contexte de plus en plus tendu, que ce soit technologiquement, économiquement ou politiquement. Toutes les sphères les plus importantes de la société humaine sont chaque jour un peu plus mises à rude épreuve. Et dans tout ce beau monde, on retrouve l'IA. Une technologie démocratisée dans les années 2020 (on dirait presque pourtant que l'on a toujours connu ChatGPT) et qui connaît aujourd'hui un essor largement qualifiable "d'exponentiel".
 
 Je mentirais largement en disant que l'IA ne sert à rien. J'en suis un fervent utilisateur et j'en vois les bénéfices au quotidien, ainsi que pas mal d'inconvénients qui suivent. Alors j'ai envie de vous poser une seule question : "Pourquoi continue-t-on à développer l'IA", ou, si je suis un peu plus précis : "Pourquoi de cette manière".
 
