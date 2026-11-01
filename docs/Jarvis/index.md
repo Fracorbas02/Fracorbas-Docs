@@ -1,7 +1,7 @@
 ---
 sidebar_label: Vue d'ensemble
 title: Jarvis — vue d'ensemble
-description: Présentation de Jarvis, assistant local (LLM auto-hébergé + outils MCP + voix locale), et de ses trois interfaces.
+description: Présentation de mon assistant local Jarvis (LLM auto-hébergé + outils MCP + voix locale), et de ses trois interfaces.
 tags: [jarvis, assistant, llm-local, llama.cpp, mcp, gtk4, python]
 last_update:
   date: 2026-11-01

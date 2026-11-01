@@ -34,7 +34,7 @@ timeout = 300.0                          # 1er chargement + prompt processing pe
 
 ```toml
 [agent]
-system_prompt = """Tu es Jarvis, l'assistant local de Bastien..."""
+system_prompt = """Tu es Jarvis, mon assistant local..."""
 max_iterations = 8    # nombre max d'appels LLM (tool calls) par tour
 ```
 
