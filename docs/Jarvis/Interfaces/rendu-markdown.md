@@ -21,9 +21,17 @@ Un **parseur CommonMark + GFM maison** produit des widgets GTK natifs, re-rendu 
 - liens **cliquables** (linkify), images ;
 - listes à puces, numérotées, **à tâches** (`- [ ]` / `- [x]`) ;
 - citations (`>`), séparateurs (`---`) ;
-- **tableaux** GFM (en-tête + alignements, rendu compact) ;
-- blocs de code ` ``` ` avec langage ;
-- footnotes.
+- **tableaux** GFM : le `Gtk.Grid` tient dans la bulle (**pas de scrollbar horizontale**, policy NEVER), les cellules longues wrappent ; alignement via `xalign` (texte) et non `halign` (widget, sans effet) ; bordures posées sur le conteneur + right/bottom par cellule (plus de doublons) ; scroll vertical AUTOMATIC avec `propagate_natural_height` pour éviter le warning GTK « Trying to measure MessageBox … needs at least N » en boucle ;
+- blocs de code ` ``` ` avec langage : scroll horizontal AUTOMATIC + `propagate_natural_height` (même garde contre le warning de mesure) ;
+- footnotes ;
+- **lignes d'outils** `⚡`/`✓`/`✗` toujours visibles, intercalées dans le flux (voir [App GTK4](./app-gtk.md)) ; clic = déplie le résultat ; plus d'`Adw.ExpanderRow` dans un `Gtk.Box` (warning GTK), le raisonnement est placé dans un `Gtk.ListBox`.
+
+**Parseur — règles corrigées** (`gtk/markdown.py`, `gtk/markdown_lib.py`) :
+
+- maths `$...$` / `$$...$$` : règles pandoc (pas d'espace autour, `$` fermant non suivi d'un chiffre) — « 5$ et 3$ », « $HOME et $PATH » ne sont plus pris pour des maths ;
+- titre ATX : la séquence de fermeture `#...` exige un espace avant — « ## C# » garde son `#` final ;
+- `__`/`___` intra-mot (`a__b__c`) ne sont plus rendus en gras, comme `_` ;
+- les lignes de continuation indentées d'un item de liste (fence, tableau, citation…) sont **rassemblées avant** le parsing, sinon un bloc multi-lignes dans une liste était découpé ligne par ligne.
 
 Avantages : stable, pas de dépendance système lourde, les réponses restent **sélectionnables/copiables** (y compris les tableaux). Les images embarquées passent par la **garde SSRF** de `netguard.check_url_ssrf` (loopback/link-local/privé refusés — un LLM peut peupler le Markdown de n'importe quelle URL).
 

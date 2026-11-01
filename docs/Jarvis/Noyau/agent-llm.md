@@ -45,7 +45,7 @@ Déroulement d'un tour :
 2. **Compaction auto** si l'usage du contexte approche de la saturation (voir [Gestion du contexte](../Noyau/contexte-compactage.md)).
 3. Le message user est ajouté ; la **note d'usage du contexte** est injectée dans le system prompt.
 4. Boucle (max `max_iterations` = 8) : appel LLM streamé → s'il y a des `tool_calls`, chacun est exécuté (MCP ou outil interne), le résultat est injecté en `{"role": "tool", "tool_call_id": ..., "content": ...}`, et on repart. Sinon la réponse finale est retournée.
-5. `TurnTrace` : `tool_calls: [(nom, args_json)]`, `iterations`, `error`, `tts_tags`.
+5. `TurnTrace` : `tool_calls: [(nom, args_json)]`, `iterations`, `error`, `tts_tags`, plus les **métriques d'usage réelles** remontées par le serveur : `prompt_tokens` et `completion_tokens` (somme sur toutes les itérations du tour, via le champ `usage` de la réponse — `0` si le serveur ne le renvoie pas, auquel cas l'UI retombe sur l'estimation ~4 car/tok) et `gen_seconds` (temps passé dans les appels LLM seuls, hors exécution des outils). Le client demande l'usage en streaming via `stream_options: {"include_usage": true}` et lit le chunk final `usage` (qui n'a pas de `choices`).
 
 ### Outils internes (hors MCP)
 

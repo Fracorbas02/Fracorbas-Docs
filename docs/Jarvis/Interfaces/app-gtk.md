@@ -32,13 +32,17 @@ Le prompt texte est dans le **menu (Ctrl+P)**, avec les conversations (Ctrl+O) e
 ## Conversation
 
 - **Sidebar repliable** (bouton toggle en haut à gauche, `Adw.OverlaySplitView`) : conversations passées (titre + date + nb messages), clic = reprise, conversation active surlignée, bouton `+` pour une nouvelle.
-- **Barre d'actions en haut** (dans le header) : **Nouvelle** (Ctrl+N) et **Reset contexte** (cible LLM / STT / TTS) — redémarre le serveur **géré par Jarvis** avec le même GGUF (jamais un serveur externe) pour repartir sur un contexte vierge.
-- **Zone d'échange centrée**, barre du bas : bouton **micro** (STT local : record VAD → transcribe → tour LLM) + champ texte + envoyer.
+- **Barre d'actions dans la page Conversation** (pas dans le header global — elle n'apparaît donc que sur l'onglet chat) : **Nouvelle** (Ctrl+N) et **Reset contexte** (cible LLM / STT / TTS) — redémarre le serveur **géré par Jarvis** avec le même GGUF (jamais un serveur externe) pour repartir sur un contexte vierge.
+- **Zone d'échange centrée**, barre du bas : bouton **micro** (STT local : record VAD → transcribe → tour LLM) + champ texte + envoyer. La barre de saisie fait **70 % de la largeur** de la fenêtre (recalculée au `map` et sur `notify::default-width` — GTK4 n'a pas de signal `size-allocate` sur un `Gtk.Box`).
 - **Réponses en streaming rendues en Markdown 100 %** :
   - par défaut **widgets GTK natifs** (parseur CommonMark+GFM maison, `gtk/markdown.py`) : titres, **gras**/*italique*/`code`/~~barré~~, liens cliquables, images, listes puces/numérotées/à tâches, citations, **tableaux**, blocs ` ``` `, footnotes, séparateurs — re-rendu à chaque fragment ;
   - avec **`JARVIS_WEBKIT=1`** et WebKitGTK 6.0 installé : HTML complet (`markdown-it-py`) dans une WebView, **repli automatique** sur le rendu natif si WebKit échoue.
-  - **Raisonnement repliable** et **appels d'outils dépliables** avec résultat, en lignes `✓`/`✗` + durée.
+  - **Raisonnement repliable** et **appels d'outils dépliables** avec résultat.
+- **Appels d'outils intercalés dans le flux** : la ligne `⚡`/`✓`/`✗` nom(args) + durée reste **à l'endroit du flux où le LLM a appelé l'outil** (et non plus regroupée en fin de bulle — en mode WebKit, où on ne peut pas intercaler, elles restent en bas de bulle). Clic sur la ligne = déplie le résultat. En replay d'historique, l'aperçu indique « (résultat non rejoué) ».
+- **Méta du tour sous chaque bulle assistant** : « N tok en X s → Y tok/s » (plus l'erreur du tour si présente).
+- **Bouton « i » sur chaque bulle assistant** (label texte, indépendant du thème d'icônes) → popover avec les **stats réelles de la réponse** : tokens générés **réels** remontés par le serveur (`stream_options.include_usage` en streaming, champ `usage` sinon — fallback estimation ~4 car/tok si le serveur ne renvoie rien), **tok/s calculé sur le temps de génération seul** (hors exécution des outils), tokens de prompt, durée du tour, nombre d'outils/itérations.
 - **Copie/sélection** : les réponses assistant sont sélectionnables et copiables (tableaux Markdown compacts inclus).
+- **Sessions sans parasite** : une conversation sans message n'est **pas écrite sur disque** (plus d'entrée « (vide) » dans la sidebar) ; la suppression n'est confirmée par toast que sur le **résultat réel** de l'événement `session_deleted` ; l'envoi d'un prompt et le changement de conversation sont **bloqués pendant un tour en cours ou un chargement** (évite qu'un prompt parti entre deux aille dans la mauvaise conversation).
 
 ## Header : statut, contexte, notifications
 

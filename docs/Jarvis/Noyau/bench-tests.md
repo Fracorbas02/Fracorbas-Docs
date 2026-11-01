@@ -31,7 +31,7 @@ python3 tests/test_tui.py                # validation visuelle du rendu TUI sans
 
 ### Les mocks
 
-- **`tests/mock_llm.py`** : serveur **OpenAI-compatible mock** qui émet du **SSE avec des `tool_calls fragmentés`** (id/name/arguments par morceaux) pour valider le réassemblage par index côté `llm.py`, plus des réponses avec raisonnement (`reasoning_content`).
+- **`tests/mock_llm.py`** : serveur **OpenAI-compatible mock** qui émet du **SSE avec des `tool_calls fragmentés`** (id/name/arguments par morceaux) pour valider le réassemblage par index côté `llm.py`, des réponses avec raisonnement (`reasoning_content`), et désormais un **chunk final `usage`** (`prompt_tokens`/`completion_tokens`) pour valider la capture des métriques réelles.
 - **`mcp_servers/echo.py`** : vrai serveur MCP réel en sous-processus (`echo__ping`) pour valider la transmission des schémas, le déroulé tool_call → exécution MCP → injection `role=tool` → réponse finale.
 - **`tests/ws_mock.py`** : simule le **websocket `/v1/realtime`** pour tester la cascade STT Voxtral (dernier recours de `STTClient`).
 - **`tests/mock_voice.py`** : voix mock (STT/TTS) pour les tests d'intégration.
@@ -48,7 +48,9 @@ python3 tests/test_tui.py                # validation visuelle du rendu TUI sans
 | `test_server.py` | `server.py` : statuts online/managed/offline, garde loopback, start/stop |
 | `test_tty_guard.py` | Restauration termios sur signaux et sur pty de test |
 | `test_voice.py` / `test_mistral_tts.py` | Cascade STT (batch → chat → WS), client TTS local, client API Mistral (erreurs sans corps logué) |
-| `test_gtk_backend.py` / `test_gtk_app_structure.py` / `test_gtk_markdown*.py` | Pont GTK (événements, sessions, réglages), structure fenêtre (stub `gi`), parseur Markdown GTK |
+| `test_gtk_backend.py` / `test_gtk_app_structure.py` / `test_gtk_markdown*.py` | Pont GTK (événements, sessions, réglages), structure fenêtre (stub `gi`, **asserts GTK4** : pas de `connect("size-allocate")`, pas de `max-width`/`border-collapse` dans le CSS GTK), parseur Markdown GTK (tableaux, faux positifs inline `$`/`#`) |
+| `test_gtk_sessions.py` | Sessions GTK : plus de fichier « vide », filtrage `count=0`, suppression de la courante sans reliquat « (vide) », load/new refusés pendant un tour |
+| `test_llm_usage.py` | Capture du `usage` (stream + non-stream), accumulation dans `TurnTrace`, événement `done` du backend (tokens réels, tok/s sur le temps de génération seul) |
 | `test_tui.py` | Rendu TUI (thinking repliable, outils ✓/✗, Markdown live) sans LLM |
 
 Le principe : **le harnais est testé sans modèle ni réseau**, le modèle restant interchangeable — il ne dépend que de l'API OpenAI-compatible. Le futur fine-tune cybersécurité (CyberLLM) se branche à la place du LLM sans rien réécrire, tant que l'interface outils reste du MCP standard.
