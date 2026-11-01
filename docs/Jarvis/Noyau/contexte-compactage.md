@@ -1,7 +1,7 @@
 ---
-sidebar_position: 7
+sidebar_position: 3
 sidebar_label: Contexte et compactage
-title: Gestion du contexte et compactage automatique
+title: Gestion du contexte et compactage
 description: Comment Jarvis surveille l'usage du contexte (GET /slots), injecte la note d'usage dans le system prompt, et compacte l'historique (manuel, auto à 75%, rattrapage sur tool call tronqué, outil interne jarvis__compact).
 tags: [jarvis, contexte, compactage, llama.cpp, slots, tokens]
 last_update:

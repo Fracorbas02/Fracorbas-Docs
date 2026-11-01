@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 sidebar_label: Architecture
 title: Architecture détaillée
 description: Détail des composants du cœur de Jarvis (agent, LLM, MCP, sessions) et de leurs interactions, avec le flux d'un tour complet.
@@ -60,8 +60,8 @@ Agent(llm, tools, system_prompt, max_iterations=8, stream=True,
 
 - Si aucun message `system` n'est présent, le `system_prompt` est inséré en tête.
 - **Outils internes** (hors MCP) : exposés au modèle comme des outils classiques, avec un schéma `{type: object, properties: {}}` vide :
-  - `jarvis__compact` : remplace l'historique par `[system, user(résumé), assistant(accusé)]` (voir [Gestion du contexte](./07-contexte-compactage.md)) ;
-  - `jarvis__voice_tone` : enregistre le ton de voix dans `trace.tts_tags` (voir [Émotions TTS](./13-emotions-tts.md)).
+  - `jarvis__compact` : remplace l'historique par `[system, user(résumé), assistant(accusé)]` (voir [Gestion du contexte](../Noyau/contexte-compactage.md)) ;
+  - `jarvis__voice_tone` : enregistre le ton de voix dans `trace.tts_tags` (voir [Émotions TTS](../Voix/emotions-tts.md)).
 - **Note d'usage du contexte** : à chaque itération, `[Usage du contexte : ~N/M tokens. Si tu approches de la limite, appelle jarvis__compact...]` est injecté dans le system prompt (en remplaçant la note précédente) pour que le modèle voie combien il lui reste.
 
 ## `mcp.py` — agrégation MCP

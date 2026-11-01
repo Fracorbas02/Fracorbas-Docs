@@ -1,7 +1,7 @@
 ---
-sidebar_position: 16
-sidebar_label: Modèles locaux et GPU
-title: Découverte des modèles GGUF et gestion du GPU
+sidebar_position: 5
+sidebar_label: Modèles et GPU
+title: Modèles GGUF locaux et GPU
 description: Scan des répertoires de modèles (~/models, cache HF, JARVIS_MODEL_DIRS), classification LLM/STT/TTS par répertoire parent ou nom, détection GPU (NVIDIA/ROCm/Vulkan/lspci), choix persistant gpu.json et répartition multi-GPU (--device / CUDA_VISIBLE_DEVICES).
 tags: [jarvis, gguf, modèles, gpu, vulkan, rocm, cuda, llama.cpp, multi-gpu]
 last_update:

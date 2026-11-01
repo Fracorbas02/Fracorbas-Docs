@@ -1,0 +1,9 @@
+{
+  "label": "Voix",
+  "position": 3,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "description": "STT local (whisper.cpp / Voxtral Realtime), TTS local (llama.cpp), TTS cloud API Mistral (Voxtral) et tags d'émotion."
+  }
+}

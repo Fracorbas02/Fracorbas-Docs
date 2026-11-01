@@ -1,0 +1,9 @@
+{
+  "label": "Interfaces",
+  "position": 4,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "description": "Les interfaces de Jarvis : REPL terminal (CLI/TUI) et application GTK4/libadwaita, dont le rendu Markdown."
+  }
+}

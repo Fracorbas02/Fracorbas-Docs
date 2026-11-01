@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 4
 sidebar_label: CLI / TUI et sessions
 title: CLI (REPL) — commandes et sessions
 description: Toutes les commandes / du REPL Jarvis, la saisie multiligne, les métriques, les notifications desktop et les sessions persistantes.

@@ -1,7 +1,7 @@
 ---
-sidebar_position: 15
-sidebar_label: Rendu Markdown GTK
-title: Rendu Markdown dans l'app GTK (widgets natifs vs WebKit)
+sidebar_position: 2
+sidebar_label: Rendu Markdown
+title: Rendu Markdown dans l'app GTK
 description: Les deux moteurs de rendu des réponses dans l'app GTK4 — parseur CommonMark+GFM maison vers widgets GTK natifs (défaut, stable) et markdown-it-py + WebKitGTK (JARVIS_WEBKIT=1, expérimental) — et la garde SSRF appliquée aux images.
 tags: [jarvis, gtk4, markdown, commonmark, gfm, webkit, markdown-it-py, ssrf]
 last_update:

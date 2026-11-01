@@ -1,7 +1,7 @@
 ---
-sidebar_position: 10
+sidebar_position: 4
 sidebar_label: Sécurité et garde-fous
-title: Sécurité et garde-fous de Jarvis
+title: Sécurité et garde-fous
 description: Tous les mécanismes de confinement de Jarvis — garde SSRF (netguard), confinement fichiers, règles par serveur MCP (scan/lan/snmp/docker/git), anti-injection d'options, protection du terminal, hygiène des secrets et des logs.
 tags: [jarvis, sécurité, ssrf, confinement, mcp, injection, secrets, logs]
 last_update:

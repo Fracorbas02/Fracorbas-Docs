@@ -2,7 +2,7 @@
   "label": "Jarvis",
   "position": 1,
   "link": {
-    "type": "generated-index",
-    "description": "Documentation technique complète de Jarvis, l'assistant local de Bastien : LLM auto-hébergé (llama.cpp), outils MCP, voix locale (STT/TTS) et interface GTK4."
+    "type": "doc",
+    "id": "index"
   }
 }

@@ -1,7 +1,7 @@
 ---
-sidebar_position: 11
-sidebar_label: Voix locale (STT + TTS)
-title: Voix locale — STT (whisper.cpp / Voxtral) et TTS (llama-server)
+sidebar_position: 1
+sidebar_label: STT + TTS local
+title: Voix locale — STT et TTS
 description: Les deux serveurs voix indépendants de Jarvis (whisper-server :8178, llama-server TTS :9932), la cascade de transcription (batch -> chat multimodal -> websocket /v1/realtime), le VAD, l'enregistrement micro et la lecture WAV.
 tags: [jarvis, voix, stt, tts, whisper.cpp, voxtral, vad, websocket, llama.cpp, audio]
 last_update:
@@ -11,7 +11,7 @@ last_update:
 
 # Voix locale — STT + TTS
 
-Deux serveurs **indépendants** du llama-server principal (config `[voice.stt]` / `[voice.tts]`, voir [Configuration](./04-configuration.md)). S'ils ne répondent pas, le CLI et l'app GTK **les lancent automatiquement** avec le GGUF de la config (`ensure_voice_server(..., auto_start=True)` au CLI ; bouton dédié dans l'app).
+Deux serveurs **indépendants** du llama-server principal (config `[voice.stt]` / `[voice.tts]`, voir [Configuration](../Commencer/configuration.md)). S'ils ne répondent pas, le CLI et l'app GTK **les lancent automatiquement** avec le GGUF de la config (`ensure_voice_server(..., auto_start=True)` au CLI ; bouton dédié dans l'app).
 
 ```sh
 # STT : whisper.cpp (ggml), sert POST /inference
@@ -76,4 +76,4 @@ Le client websocket est un **mini client RFC 6455 en stdlib** (handshake HTTP + 
 
 ## Découverte des modèles voix
 
-La classification d'un GGUF en STT/TTS se fait d'abord par le **répertoire parent** (`~/models/stt/` → STT, `~/models/tts/` → TTS, même pour un nom opaque comme `Q4_K_M.gguf`), sinon par heuristique de nom (`whisper`/`ggml-` → STT ; `voxtral`/`piper`/`kokoro`/`xtts`/`tts`… → TTS ; reste → LLM). Voir [Découverte des modèles](./16-modeles-gpu.md).
+La classification d'un GGUF en STT/TTS se fait d'abord par le **répertoire parent** (`~/models/stt/` → STT, `~/models/tts/` → TTS, même pour un nom opaque comme `Q4_K_M.gguf`), sinon par heuristique de nom (`whisper`/`ggml-` → STT ; `voxtral`/`piper`/`kokoro`/`xtts`/`tts`… → TTS ; reste → LLM). Voir [Découverte des modèles](../Noyau/modeles-gpu.md).
