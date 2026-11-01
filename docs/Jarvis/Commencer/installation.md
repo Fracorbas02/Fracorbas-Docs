@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 sidebar_label: Installation
 title: Installation et lancement
 description: Installer Jarvis (uv, dépendances), configurer config.toml, lancer le CLI, l'app GTK4 et le bench ; piège du venv uv avec PyGObject.

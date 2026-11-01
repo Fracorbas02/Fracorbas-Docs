@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 sidebar_label: Configuration (config.toml)
 title: Configuration — config.toml
 description: Toutes les sections de config.toml (exemple complet) et les variables d'environnement JARVIS_* / clés API.
@@ -38,7 +38,7 @@ system_prompt = """Tu es Jarvis, l'assistant local de Bastien..."""
 max_iterations = 8    # nombre max d'appels LLM (tool calls) par tour
 ```
 
-Le `system_prompt` de l'exemple contient l'instruction pour la veille CVE (`days` sur `search_cve`) et celle pour les **tags d'émotion TTS** (voir [Émotions TTS](./13-emotions-tts.md)).
+Le `system_prompt` de l'exemple contient l'instruction pour la veille CVE (`days` sur `search_cve`) et celle pour les **tags d'émotion TTS** (voir [Émotions TTS](../Voix/emotions-tts.md)).
 
 ## `[voice.stt]` / `[voice.tts]` — serveurs voix locaux
 

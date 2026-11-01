@@ -1,7 +1,7 @@
 ---
-sidebar_position: 9
-sidebar_label: "MCP — catalogue (2/2 : veille sécurité, web)"
-title: "Serveurs MCP — veille sécurité (CVE/KEV/EPSS/GHSA/exploitdb) et web (fetch, rss, echo)"
+sidebar_position: 2
+sidebar_label: Veille sécurité et web
+title: Serveurs MCP — veille sécurité et web
 description: "Catalogue détaillé des serveurs MCP de Jarvis (partie 2) : cve (NVD), kev (CISA), epss (FIRST), ghsa (GitHub), exploitdb, fetch, rss, echo — API, clés optionnelles et garde-fous."
 tags: [jarvis, mcp, cve, kev, epss, ghsa, exploitdb, veille, sécurité, ssrf, rss]
 last_update:

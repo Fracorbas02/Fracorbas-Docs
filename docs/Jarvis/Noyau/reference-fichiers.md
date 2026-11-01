@@ -1,7 +1,7 @@
 ---
-sidebar_position: 18
-sidebar_label: Référence des fichiers et état
-title: Référence des fichiers — code, config et état utilisateur
+sidebar_position: 7
+sidebar_label: Référence des fichiers
+title: Référence des fichiers et de l'état
 description: Tableau de correspondance complet fichier par fichier (src/jarvis, mcp_servers, bench, tests) et chemins d'état utilisateur (~/.config/jarvis, ~/.cache/jarvis), plus la carte des variables d'environnement.
 tags: [jarvis, référence, fichiers, chemins, env, state]
 last_update:
@@ -41,7 +41,7 @@ last_update:
 
 `nettools` · `sysinfo` · `scan` · `snmp` · `lan` · `docker` · `files` · `git` · `memory` · `notes` · `netutils` · `textutils` · `cve` · `kev` · `epss` · `ghsa` · `exploitdb` · `fetch` · `rss` · `echo`
 
-→ détails : [MCP 1/2](./08-mcp-serveurs.md) et [MCP 2/2](./09-mcp-veille-securite.md).
+→ détails : [MCP 1/2](../Modules%20MCP/systeme-reseau-fichiers.md) et [MCP 2/2](../Modules MCP/veille-securite-web.md).
 
 ## `bench/` et `tests/`
 
@@ -71,4 +71,4 @@ Tout le dossier `~/.cache/jarvis` peut être déplacé via **`JARVIS_LOG_DIR`**.
 
 `JARVIS_CONFIG` · `JARVIS_LOG_DIR` · `JARVIS_MODEL_DIRS` · `JARVIS_FILES_ROOTS` · `JARVIS_GIT_REPO` · `JARVIS_MEMORY_FILE` · `JARVIS_NOTES_DIR` · `JARVIS_SNMP_COMMUNITY` · `JARVIS_FETCH_ALLOW_PRIVATE=1` (tests SSRF) · `JARVIS_ALLOW_PUBLIC_LLM=1` (override loopback) · `JARVIS_WEBKIT=1` (WebKitGTK) · `NVD_API_KEY` · `FIRST_API_KEY` · `GITHUB_TOKEN` · `MISTRAL_API_KEY` (prime sur `mistral.json`)
 
-→ détails et priorités : [Configuration](./04-configuration.md#variables-denvironnement)
+→ détails et priorités : [Configuration](../Commencer/configuration.md#variables-denvironnement)

@@ -1,0 +1,8 @@
+{
+  "label": "Commencer",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Installer Jarvis, le configurer et lancer ta première conversation (CLI ou app GTK4)."
+  }
+}

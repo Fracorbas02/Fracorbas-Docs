@@ -1,0 +1,9 @@
+{
+  "label": "Noyau technique",
+  "position": 5,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "description": "Le cœur de Jarvis : architecture, boucle agent et client LLM, gestion du contexte, sécurité, modèles/GPU, bench, tests et référence des fichiers."
+  }
+}

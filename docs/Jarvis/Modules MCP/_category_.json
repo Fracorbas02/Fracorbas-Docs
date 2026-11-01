@@ -1,0 +1,9 @@
+{
+  "label": "Modules MCP",
+  "position": 2,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "description": "Les 19 serveurs MCP de Jarvis, outil par outil, avec leurs garde-fous : diagnostic système/réseau, veille sécurité (CVE/KEV/EPSS/GHSA/exploitdb) et web."
+  }
+}

@@ -1,6 +1,6 @@
 ---
-sidebar_position: 12
-sidebar_label: TTS API Mistral (Voxtral)
+sidebar_position: 2
+sidebar_label: TTS API Mistral
 title: TTS cloud — API Mistral (Voxtral)
 description: TTS via l'API Mistral (POST /v1/audio/speech, modèles voxtral-*-tts), gestion de la clé API (mistral.json chmod 600 ou MISTRAL_API_KEY), voix preset/clonées, liste dynamique des modèles, fallback automatique sur le TTS local.
 tags: [jarvis, tts, mistral, voxtral, api, cloud, fallback, clé-api]
@@ -50,4 +50,4 @@ emotion_tags = true              # autorise les tags [emotion=..][pace=..] en t�
 
 Erreurs remontées sans jamais journaliser le corps : 401 → « clé API invalide ou expirée », autre HTTP → « HTTP `<code>` sur /v1/... — corps non journalisé ».
 
-→ Émotions dans la voix : [Émotions TTS (tags Voxtral 3)](./13-emotions-tts.md)
+→ Émotions dans la voix : [Émotions TTS (tags Voxtral 3)](../Voix/emotions-tts.md)

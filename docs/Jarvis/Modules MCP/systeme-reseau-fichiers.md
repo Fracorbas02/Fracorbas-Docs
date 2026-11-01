@@ -1,7 +1,7 @@
 ---
-sidebar_position: 8
-sidebar_label: "MCP — catalogue (1/2 : système, réseau, fichiers)"
-title: "Serveurs MCP — système, réseau, fichiers, utilitaires"
+sidebar_position: 1
+sidebar_label: Système, réseau, fichiers
+title: Serveurs MCP — système, réseau, fichiers, utilitaires
 description: "Catalogue détaillé des serveurs MCP de Jarvis (partie 1) : nettools, sysinfo, scan, snmp, lan, docker, files, git, memory, notes, netutils, textutils — outils et garde-fous."
 tags: [jarvis, mcp, outils, réseau, système, fichiers, git, docker, snmp]
 last_update:
@@ -28,7 +28,7 @@ Binaires système (`ping`, `dig`, `traceroute`, `whois`, `ss`, `ip`, `openssl`) 
 | `nettools__ip_addr()` | Adresses des interfaces + routes (`ip -brief addr`, `ip route`) |
 | `nettools__tls_info(host, port=443)` | Chaîne de certificats TLS : émetteur, sujet, dates, SAN |
 | `nettools__bandwidth_test(server, duration=10)` | Débit via **iperf3** (client TCP, up+down) — `server` **obligatoire**, aucun serveur public par défaut |
-| `nettools__http_get(url, timeout=15, allow_private=False)` | GET HTTP(S) : statut, headers, début du corps — **garde SSRF** (voir [Sécurité](./10-securite-garde-fous.md)) |
+| `nettools__http_get(url, timeout=15, allow_private=False)` | GET HTTP(S) : statut, headers, début du corps — **garde SSRF** (voir [Sécurité](../Noyau/securite-garde-fous.md)) |
 
 Garde-fous : `_check_host` valide toute cible passée à un binaire externe (jamais d'argument commençant par `-`, donc jamais d'option déguisée) ; `_check_url_ssrf` bloque loopback/link-local/privé.
 
@@ -146,4 +146,4 @@ Stockage : `~/.cache/jarvis/memory.md` (ou `JARVIS_MEMORY_FILE`) et `~/.cache/ja
 | `textutils__regex_test(pattern, text, flags="")` | Teste une regex Python : nb de matchs + groupes de chaque match |
 | `textutils__unit_convert(value, from_unit, to_unit)` | Conversions **même dimension obligatoire** : tailles (o/ko/mo/go/to), débits, durées, températures — refuse les conversions inter-dimensions (s → go) |
 
-→ Partie 2 (veille sécurité + web) : [MCP — veille sécurité et web](./09-mcp-veille-securite.md)
+→ Partie 2 (veille sécurité + web) : [MCP — veille sécurité et web](../Modules%20MCP/veille-securite-web.md)

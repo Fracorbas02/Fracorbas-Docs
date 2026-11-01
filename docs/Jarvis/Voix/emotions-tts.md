@@ -1,7 +1,7 @@
 ---
-sidebar_position: 13
-sidebar_label: Émotions TTS (tags Voxtral 3)
-title: Émotions dans la voix — tags inline Voxtral TTS 3 et outil jarvis__voice_tone
+sidebar_position: 3
+sidebar_label: Émotions TTS
+title: Émotions dans la voix — tags Voxtral 3
 description: Les tags [emotion=..][pace=..] (34 émotions + 2 paces) posés par le LLM en tête de réponse, envoyés au TTS uniquement et jamais affichés/sauvegardés ; l'outil interne jarvis__voice_tone comme alternative fiable ; filtrage du tag dès le premier fragment en streaming.
 tags: [jarvis, tts, voxtral, emotion, tags, voice-tone, streaming]
 last_update:

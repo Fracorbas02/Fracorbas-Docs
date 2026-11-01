@@ -1,5 +1,5 @@
 ---
-sidebar_position: 14
+sidebar_position: 1
 sidebar_label: Application GTK4
 title: Application GTK4 / libadwaita (jarvis-app)
 description: L'interface graphique native de Jarvis — accueil micro, conversation (sidebar, streaming Markdown en widgets natifs, barre de contexte live), réglages, notifications en cloche, popover de statut serveur, autorisation micro au premier lancement.
@@ -18,7 +18,7 @@ uv run jarvis-app --config /chemin/config.toml
 
 L'UI ne touche à **rien d'autre que la partie graphique** : le cœur LLM + MCP + voix + sessions est réutilisé tel quel. Toute la logique async vit dans `gtk/backend.py` (`GtkBackend`) : une **boucle asyncio dans un thread dédié**, les événements remontent au thread GTK via une queue + `GLib.idle_add`. L'agent tourne avec les mêmes outils internes (`jarvis__compact`, `jarvis__voice_tone`).
 
-Installation des dépendances système et piège du venv uv (`--system-site-packages`) : voir [Installation](./03-installation.md#le-piège-du-venv-uv-pygobject).
+Installation des dépendances système et piège du venv uv (`--system-site-packages`) : voir [Installation](../Commencer/installation.md#le-piège-du-venv-uv-pygobject).
 
 ## Accueil
 
@@ -49,7 +49,7 @@ Le prompt texte est dans le **menu (Ctrl+P)**, avec les conversations (Ctrl+O) e
 ## Réglages (vrai onglet)
 
 - **Thème** : système / sombre / clair.
-- **GPU** utilisé par les serveurs locaux (persisté dans `~/.config/jarvis/gpu.json`) — voir [Modèles et GPU](./16-modeles-gpu.md).
+- **GPU** utilisé par les serveurs locaux (persisté dans `~/.config/jarvis/gpu.json`) — voir [Modèles et GPU](../Noyau/modeles-gpu.md).
 - **Taille de contexte** (`--ctx-size`) du serveur géré.
 - **Liste des outils MCP** chargés (groupés par serveur).
 - **Micro utilisé** (`arecord -L` / sources PipeWire `pactl`, persisté dans `~/.config/jarvis/ui.json`).

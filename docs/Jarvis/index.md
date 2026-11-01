@@ -1,5 +1,4 @@
 ---
-sidebar_position: 1
 sidebar_label: Vue d'ensemble
 title: Jarvis — vue d'ensemble
 description: Présentation de Jarvis, assistant local (LLM auto-hébergé + outils MCP + voix locale), et de ses trois interfaces.
@@ -12,6 +11,18 @@ last_update:
 # Jarvis — vue d'ensemble
 
 **Jarvis** est un assistant personnel **100 % local** : un LLM auto-hébergé servi par `llama-server` (llama.cpp, backend Vulkan), piloté par une boucle d'agent en Python qui lui expose des **outils via MCP** (Model Context Protocol), avec en plus une **voix locale** (STT whisper.cpp / Voxtral Realtime, TTS llama.cpp) et une **TTS cloud optionnelle** via l'API Mistral (Voxtral).
+
+> 👉 **Pour commencer tout de suite** : [Démarrage rapide](./Commencer/demarrage-rapide.md) — install, `llama-server`, premier chat en 5 minutes.
+
+## Organisation de cette documentation
+
+| Onglet | Contenu |
+|--------|---------|
+| **Commencer** | [Démarrage rapide](./Commencer/demarrage-rapide.md), [installation](./Commencer/installation.md), [configuration](./Commencer/configuration.md), [CLI/TUI](./Commencer/cli-tui.md) |
+| **Modules MCP** | Les 19 serveurs d'outils : [système/réseau/fichiers](./Modules%20MCP/systeme-reseau-fichiers.md), [veille sécurité et web](./Modules%20MCP/veille-securite-web.md) |
+| **Voix** | [STT/TTS local](./Voix/stt-tts-local.md), [TTS API Mistral](./Voix/tts-api-mistral.md), [émotions TTS](./Voix/emotions-tts.md) |
+| **Interfaces** | [App GTK4](./Interfaces/app-gtk.md), [rendu Markdown](./Interfaces/rendu-markdown.md) |
+| **Noyau technique** | [architecture](./Noyau/architecture.md), [agent/LLM](./Noyau/agent-llm.md), [contexte](./Noyau/contexte-compactage.md), [sécurité](./Noyau/securite-garde-fous.md), [modèles/GPU](./Noyau/modeles-gpu.md), [bench/tests](./Noyau/bench-tests.md), [référence fichiers](./Noyau/reference-fichiers.md) |
 
 Trois interfaces partagent exactement le même cœur (LLM + MCP + voix + sessions) :
 
@@ -47,7 +58,7 @@ Les capacités de Jarvis viennent de **serveurs MCP stdio** (`mcp_servers/*.py`)
 
 Familles de serveurs : diagnostic réseau (`nettools`, `sysinfo`, `scan`, `snmp`, `lan`), fichiers confinés (`files`), utilitaires purs (`netutils`, `textutils`), `git` lecture seule, `docker` lecture seule, mémoire/notes persistantes (`memory`, `notes`), **veille sécurité** (`cve` NVD, `kev` CISA, `epss` FIRST, `ghsa` GitHub, `exploitdb`), web (`fetch`, `rss`), et `echo` pour les tests.
 
-→ Voir [Catalogue des serveurs MCP](./08-mcp-serveurs.md).
+→ Voir [Catalogue des serveurs MCP](./Modules%20MCP/systeme-reseau-fichiers.md).
 
 ### 3. Voix
 
@@ -57,7 +68,7 @@ Deux serveurs **indépendants** du llama-server principal :
 - **TTS local** : `llama-server` + modèle de synthèse (ex. Voxtral 4B TTS), `POST /v1/audio/speech` avec fallback `POST /tts`.
 - **TTS cloud (secours ou choix)** : API Mistral `POST /v1/audio/speech` (modèles `voxtral-*-tts`), avec **émotions inline** Voxtral TTS 3 (`[emotion=..][pace=..]` posés par le LLM en tête de réponse, envoyés au TTS uniquement, jamais affichés) et **fallback automatique** sur le TTS local si l'API échoue.
 
-→ Voir [Voix locale (STT/TTS)](./11-voix-locale.md) et [TTS API Mistral](./12-tts-api-mistral.md).
+→ Voir [Voix locale (STT/TTS)](./Voix/stt-tts-local.md) et [TTS API Mistral](./Voix/tts-api-mistral.md).
 
 ## Schéma d'ensemble
 
@@ -148,4 +159,4 @@ tests/         # mock LLM (SSE + tool_calls fragmentés), tests end-to-end, test
 | `~/.cache/jarvis/notes/` | Notes par sujet (`notes` MCP, surchargeable via `JARVIS_NOTES_DIR`) |
 | `~/.cache/jarvis/jarvis.log` | Log DEBUG complet (la console reste en WARNING sauf `/verbose`) |
 
-→ Suite : [Architecture détaillée](./02-architecture.md)
+→ Suite : [Architecture détaillée](Noyau/architecture.md)

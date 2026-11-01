@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 2
 sidebar_label: Agent et client LLM
 title: Agent (boucle tool-calling) et client LLM
 description: Détail d'agent.py (tour, outils internes, gestion d'erreurs), de llm.py (streaming SSE, réassemblage des tool_calls) et du choix de garder le thinking visible.
@@ -42,7 +42,7 @@ reply, history, trace = await agent.turn(
 Déroulement d'un tour :
 
 1. Le `system_prompt` est inséré en tête si absent.
-2. **Compaction auto** si l'usage du contexte approche de la saturation (voir [Gestion du contexte](./07-contexte-compactage.md)).
+2. **Compaction auto** si l'usage du contexte approche de la saturation (voir [Gestion du contexte](../Noyau/contexte-compactage.md)).
 3. Le message user est ajouté ; la **note d'usage du contexte** est injectée dans le system prompt.
 4. Boucle (max `max_iterations` = 8) : appel LLM streamé → s'il y a des `tool_calls`, chacun est exécuté (MCP ou outil interne), le résultat est injecté en `{"role": "tool", "tool_call_id": ..., "content": ...}`, et on repart. Sinon la réponse finale est retournée.
 5. `TurnTrace` : `tool_calls: [(nom, args_json)]`, `iterations`, `error`, `tts_tags`.
@@ -54,7 +54,7 @@ Exposés au modèle comme des outils classiques (schéma de paramètres vide) :
 | Outil | Rôle |
 |---|---|
 | `jarvis__compact` | Remplace l'historique par un résumé produit par le LLM lui-même — appelé par le modèle quand il voit la note d'usage, ou automatiquement par l'agent (seuil 75 %) |
-| `jarvis__voice_tone` | Le modèle fixe explicitement le ton de la voix lue (`{"emotion": "excited", "pace": "fast"}`) → enregistré dans `trace.tts_tags`, envoyé au TTS uniquement, jamais affiché (voir [Émotions TTS](./13-emotions-tts.md)) |
+| `jarvis__voice_tone` | Le modèle fixe explicitement le ton de la voix lue (`{"emotion": "excited", "pace": "fast"}`) → enregistré dans `trace.tts_tags`, envoyé au TTS uniquement, jamais affiché (voir [Émotions TTS](../Voix/emotions-tts.md)) |
 
 ### Robustesse
 

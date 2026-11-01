@@ -1,7 +1,7 @@
 ---
-sidebar_position: 17
+sidebar_position: 6
 sidebar_label: Benchmark et tests
-title: Benchmark (TTFT / tok/s) et suite de tests
+title: Benchmark et tests
 description: bench_llm.py (mesure du TTFT et tokens/s en streaming, séparation raisonnement/contenu pour les modèles thinking) et la suite de tests sans LLM réel (mock SSE + tool_calls fragmentés, MCP echo, ws_mock, tests GTK avec stub gi).
 tags: [jarvis, bench, benchmark, ttft, tests, pytest, mock, llama.cpp]
 last_update:
